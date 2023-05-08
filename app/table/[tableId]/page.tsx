@@ -133,45 +133,45 @@ export default function Page({ params }: Props): JSX.Element {
             );
           })}
         </div>
-        <div>
-          {!revealed &&
-            (ownState.selectedValue ||
-              otherPlayersState.some(
-                (state) => state.selectedValue != null,
-              )) && (
-              <Button
-                variant={'contained'}
-                onClick={(): void => {
-                  channel.send({
-                    type: 'broadcast',
-                    event: 'reveal',
-                  });
-                  setRevealed(true);
-                }}
-              >
-                Reveal
-              </Button>
-            )}
-          {revealed && (
-            <Button
-              variant={'contained'}
-              onClick={(): void => {
-                channel.send({
-                  type: 'broadcast',
-                  event: 'reset',
-                });
-                setRevealed(false);
-                setOwnState((oldState) => ({
-                  ...oldState,
-                  selectedValue: null,
-                }));
-              }}
-            >
-              Reset
-            </Button>
-          )}
-        </div>
+        <Stack direction="row" spacing={4}>
+          <Button
+            disabled={
+              revealed ||
+              (ownState.selectedValue === null &&
+                otherPlayersState.every(
+                  (state) => state.selectedValue === null,
+                ))
+            }
+            variant={'contained'}
+            onClick={(): void => {
+              channel.send({
+                type: 'broadcast',
+                event: 'reveal',
+              });
+              setRevealed(true);
+            }}
+          >
+            Reveal
+          </Button>
 
+          <Button
+            variant={'contained'}
+            disabled={!revealed}
+            onClick={(): void => {
+              channel.send({
+                type: 'broadcast',
+                event: 'reset',
+              });
+              setRevealed(false);
+              setOwnState((oldState) => ({
+                ...oldState,
+                selectedValue: null,
+              }));
+            }}
+          >
+            Reset
+          </Button>
+        </Stack>
         {revealed && (
           <Chart
             data={getUsedValues().map((value) => {
