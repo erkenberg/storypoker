@@ -1,27 +1,27 @@
 'use client';
 
-import React, { JSX, useEffect, useMemo, useState } from 'react';
+import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { PlayerState } from '@/app/table/[tableId]/player-state';
 import { cardValues } from '@/app/table/[tableId]/game-state';
-import { Button, Card, FormLabel, Grid, Stack, TextField } from '@mui/material';
+import { Button, Card, Stack } from '@mui/material';
 import { Chart } from '@/app/table/[tableId]/chart';
+import { UsernameInput } from '@/app/table/[tableId]/username-input';
+
 interface Props {
   params: { tableId: string };
 }
 
 export default function Page({ params }: Props): JSX.Element {
   const tableId = params.tableId;
-  const [username, setUsername] = useState('');
   const [ownState, setOwnState] = useState<PlayerState>({
     // TODO: uuid and/or localStorage
     clientId: `${Math.round(Math.random() * 100000)}`,
     username: '',
     selectedValue: null,
   });
-  const [revealed, setRevealed] = useState(false);
-
   const [otherPlayersState, setOtherPlayersState] = useState<PlayerState[]>([]);
+  const [revealed, setRevealed] = useState(false);
   // TODO: extract to context provider
   const client = useMemo(() => {
     return createClient(
@@ -72,35 +72,12 @@ export default function Page({ params }: Props): JSX.Element {
     channel.track(ownState);
   }, [channel, ownState]);
 
+  const updateUsername = useCallback((username: string): void => {
+    setOwnState((oldState) => ({ ...oldState, username }));
+  }, []);
+
   if (!ownState.username) {
-    return (
-      <Grid
-        container
-        spacing={0}
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
-        style={{ minHeight: '100vh' }}
-      >
-        <Grid item xs={3}>
-          <form
-            autoComplete="off"
-            onSubmit={(): void => {
-              setOwnState((oldState) => ({ ...oldState, username }));
-            }}
-          >
-            <Stack direction="column" spacing={2} sx={{ maxWidth: '500px' }}>
-              <FormLabel>Enter Name</FormLabel>
-              <TextField
-                required
-                onChange={(e): void => setUsername(e.target.value)}
-              ></TextField>
-              <Button type="submit">Submit</Button>
-            </Stack>
-          </form>
-        </Grid>
-      </Grid>
-    );
+    return <UsernameInput onSubmit={updateUsername} />;
   }
 
   const getUsedValues = (): string[] =>
