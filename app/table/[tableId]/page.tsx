@@ -172,19 +172,23 @@ export default function Page({ params }: Props): JSX.Element {
             Reset
           </Button>
         </Stack>
-        {revealed && (
-          <Chart
-            data={getUsedValues().map((value) => {
-              let count = 0;
-              if (ownState.selectedValue === value) count++;
-              for (const state of otherPlayersState) {
-                if (state.selectedValue === value) count++;
-              }
-              return count;
-            })}
-            labels={getUsedValues()}
-          />
-        )}
+        <Stack direction="row" spacing={4}>
+          <div style={{ maxWidth: '400px' }}>
+            {revealed && (
+              <Chart
+                data={getUsedValues().map((value) => {
+                  let count = 0;
+                  if (ownState.selectedValue === value) count++;
+                  for (const state of otherPlayersState) {
+                    if (state.selectedValue === value) count++;
+                  }
+                  return count;
+                })}
+                labels={getUsedValues()}
+              />
+            )}
+          </div>
+        </Stack>
       </Stack>
     </Stack>
   );
