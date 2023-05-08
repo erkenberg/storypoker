@@ -1,12 +1,12 @@
 'use client';
 
-import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import React, { JSX, useCallback, useEffect, useState } from 'react';
 import { PlayerState } from '@/app/table/[tableId]/player-state';
 import { cardValues } from '@/app/table/[tableId]/game-state';
 import { Button, Card, Stack } from '@mui/material';
 import { Chart } from '@/app/table/[tableId]/chart';
 import { UsernameInput } from '@/app/table/[tableId]/username-input';
+import { useSupabaseChannel } from '@/lib/supabase';
 
 interface Props {
   params: { tableId: string };
@@ -22,23 +22,8 @@ export default function Page({ params }: Props): JSX.Element {
   });
   const [otherPlayersState, setOtherPlayersState] = useState<PlayerState[]>([]);
   const [revealed, setRevealed] = useState(false);
-  // TODO: extract to context provider
-  const client = useMemo(() => {
-    return createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
-      {
-        realtime: {
-          params: {
-            eventsPerSecond: 10,
-          },
-        },
-      },
-    );
-  }, []);
-  const channel = useMemo(() => {
-    return client.channel(`table-${tableId}`);
-  }, [client, tableId]);
+  const channel = useSupabaseChannel(`table-${tableId}`);
+
   useEffect(() => {
     const listeners = channel
       .on('presence', { event: 'sync' }, () => {
