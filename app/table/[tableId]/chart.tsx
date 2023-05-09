@@ -12,12 +12,21 @@ interface ChartProps {
 
 export const Chart = (props: ChartProps): JSX.Element => (
   <Pie
+    style={{ margin: 'auto' }}
     options={{
       plugins: {
         datalabels: {
           anchor: 'center',
           formatter: (value, context): string => {
             return props.labels[context.dataIndex];
+          },
+          labels: {
+            title: {
+              font: {
+                weight: 'bold',
+                size: 22,
+              },
+            },
           },
         },
       },
