@@ -162,11 +162,15 @@ export default function Page({ params }: Props): JSX.Element {
                 type: 'broadcast',
                 event: 'reset',
               });
-              setRevealed(false);
-              setOwnState((oldState) => ({
-                ...oldState,
-                selectedValue: null,
-              }));
+              // NOTE: channels have a default rate limit of 1 message per 100ms.
+              // After the broadcast we need to wait a bit before our updated own state can be actually properly distributed.
+              setTimeout(() => {
+                setRevealed(false);
+                setOwnState((oldState) => ({
+                  ...oldState,
+                  selectedValue: null,
+                }));
+              }, 110);
             }}
           >
             Reset
