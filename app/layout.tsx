@@ -3,6 +3,7 @@ import { Metadata } from 'next/dist/lib/metadata/types/metadata-interface';
 import { MuiSetup } from './mui-setup';
 import { JSX, ReactNode } from 'react';
 import { AppBar } from '@/app/app-bar';
+import { ClientLayout } from '@/app/client-layout';
 
 export const metadata: Metadata = {
   title: 'StoryPoker',
@@ -18,7 +19,7 @@ export default function RootLayout({
       <body>
         <MuiSetup>
           <AppBar />
-          {children}
+          <ClientLayout>{children}</ClientLayout>
         </MuiSetup>
       </body>
     </html>
