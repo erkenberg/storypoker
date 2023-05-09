@@ -24,7 +24,10 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
   revealed,
 }): JSX.Element => {
   return (
-    <TableContainer component={Card}>
+    <TableContainer
+      component={Card}
+      sx={{ width: 'fit-content', margin: 'auto' }}
+    >
       <Table size="small">
         <TableBody>
           <TableRow key={ownState.clientId}>

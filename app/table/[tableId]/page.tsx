@@ -7,7 +7,7 @@ import {
   RemotePlayerState,
 } from '@/app/table/[tableId]/player-state';
 import { cardValues } from '@/app/table/[tableId]/game-state';
-import { Button, Card, Stack } from '@mui/material';
+import { Button, Grid, Stack } from '@mui/material';
 import { Chart } from '@/app/table/[tableId]/chart';
 import { UsernameInput } from '@/app/table/[tableId]/username-input';
 import { useSupabaseChannel } from '@/lib/supabase';
@@ -85,49 +85,45 @@ export default function Page({ params }: Props): JSX.Element {
     );
 
   return (
-    <Stack
-      direction="row"
+    <Grid
+      container
       spacing={2}
       sx={{
         marginTop: '10vh',
-        marginLeft: '10vw',
-        marginRight: '10vw',
       }}
     >
-      <div>
+      <Grid item xs={12} sm={4} md={3} sx={{ width: '100%' }}>
         <PlayerOverview
           ownState={ownState}
           remotePlayerStates={remotePlayerStates}
           revealed={revealed}
         />
-      </div>
-      <Stack direction="column" spacing={2}>
-        <div>
-          {cardValues.map((value) => {
-            return (
-              <Button
-                disabled={revealed}
-                variant={
-                  ownState.selectedValue !== value ? 'outlined' : 'contained'
-                }
-                key={value}
-                value={value}
-                sx={{ height: '80px', margin: '4px' }}
-                onClick={({ currentTarget }): void => {
-                  setOwnState((oldState) => ({
-                    ...oldState,
-                    selectedValue:
-                      oldState.selectedValue === value
-                        ? null
-                        : currentTarget.value,
-                  }));
-                }}
-              >
-                {value}
-              </Button>
-            );
-          })}
-        </div>
+      </Grid>
+      <Grid item xs={12} sm={8} md={5}>
+        {cardValues.map((value) => {
+          return (
+            <Button
+              disabled={revealed}
+              key={value}
+              variant={
+                ownState.selectedValue !== value ? 'outlined' : 'contained'
+              }
+              value={value}
+              sx={{ height: '80px', margin: '4px' }}
+              onClick={({ currentTarget }): void => {
+                setOwnState((oldState) => ({
+                  ...oldState,
+                  selectedValue:
+                    oldState.selectedValue === value
+                      ? null
+                      : currentTarget.value,
+                }));
+              }}
+            >
+              {value}
+            </Button>
+          );
+        })}
         <Stack direction="row" spacing={4}>
           <Button
             disabled={
@@ -148,7 +144,6 @@ export default function Page({ params }: Props): JSX.Element {
           >
             Reveal
           </Button>
-
           <Button
             variant={'contained'}
             disabled={!revealed}
@@ -171,25 +166,25 @@ export default function Page({ params }: Props): JSX.Element {
             Reset
           </Button>
         </Stack>
-        <Stack direction="row" spacing={4}>
-          <div style={{ maxWidth: '400px' }}>
-            {revealed && (
-              <Chart
-                data={getUsedValues().map((value) => {
-                  let count = 0;
-                  if (ownState.selectedValue === value) count++;
-                  for (const state of remotePlayerStates) {
-                    if (!state.isOffline && state.selectedValue === value)
-                      count++;
-                  }
-                  return count;
-                })}
-                labels={getUsedValues()}
-              />
-            )}
-          </div>
-        </Stack>
-      </Stack>
-    </Stack>
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <div style={{ maxWidth: '400px', margin: 'auto' }}>
+          {revealed && (
+            <Chart
+              data={getUsedValues().map((value) => {
+                let count = 0;
+                if (ownState.selectedValue === value) count++;
+                for (const state of remotePlayerStates) {
+                  if (!state.isOffline && state.selectedValue === value)
+                    count++;
+                }
+                return count;
+              })}
+              labels={getUsedValues()}
+            />
+          )}
+        </div>
+      </Grid>
+    </Grid>
   );
 }
