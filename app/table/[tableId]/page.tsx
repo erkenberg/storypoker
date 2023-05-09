@@ -1,12 +1,17 @@
 'use client';
 
 import React, { JSX, useCallback, useEffect, useState } from 'react';
-import { PlayerState } from '@/app/table/[tableId]/player-state';
+import {
+  mergeRemotePlayerState,
+  PlayerState,
+  RemotePlayerState,
+} from '@/app/table/[tableId]/player-state';
 import { cardValues } from '@/app/table/[tableId]/game-state';
 import { Button, Card, Stack } from '@mui/material';
 import { Chart } from '@/app/table/[tableId]/chart';
 import { UsernameInput } from '@/app/table/[tableId]/username-input';
 import { useSupabaseChannel } from '@/lib/supabase';
+import { PlayerOverview } from '@/app/table/[tableId]/player-overview';
 
 interface Props {
   params: { tableId: string };
@@ -20,22 +25,27 @@ export default function Page({ params }: Props): JSX.Element {
     username: '',
     selectedValue: null,
   });
-  const [otherPlayersState, setOtherPlayersState] = useState<PlayerState[]>([]);
+  const [remotePlayerStates, setRemotePlayerStates] = useState<
+    RemotePlayerState[]
+  >([]);
   const [revealed, setRevealed] = useState(false);
   const channel = useSupabaseChannel(`table-${tableId}`);
 
   useEffect(() => {
     const listeners = channel
       .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState<PlayerState>();
-        const otherState = Object.values(state)
-          .map((st) => ({
-            clientId: st[0].clientId,
-            username: st[0].username,
-            selectedValue: st[0].selectedValue,
+        const state2 = channel.presenceState<PlayerState>();
+        const remoteStates = Object.values(state2)
+          .map((state) => ({
+            clientId: state[0].clientId,
+            username: state[0].username,
+            selectedValue: state[0].selectedValue,
           }))
-          .filter((st) => st.clientId !== ownState.clientId);
-        setOtherPlayersState(otherState);
+          .filter((state) => state.clientId !== ownState.clientId);
+
+        setRemotePlayerStates((oldRemoteStates) =>
+          mergeRemotePlayerState(oldRemoteStates, remoteStates),
+        );
       })
       .on('broadcast', { event: 'reveal' }, () => {
         setRevealed(true);
@@ -69,7 +79,9 @@ export default function Page({ params }: Props): JSX.Element {
     cardValues.filter(
       (value) =>
         ownState.selectedValue === value ||
-        otherPlayersState.some((state) => state.selectedValue === value),
+        remotePlayerStates.some(
+          (state) => !state.isOffline && state.selectedValue === value,
+        ),
     );
 
   return (
@@ -83,28 +95,11 @@ export default function Page({ params }: Props): JSX.Element {
       }}
     >
       <div>
-        <Card sx={{ minWidth: '150px' }} variant={'outlined'}>
-          <ul>
-            <li key={ownState.clientId}>
-              {ownState.username}{' '}
-              {revealed
-                ? ownState.selectedValue
-                : ownState.selectedValue != null
-                ? '✓'
-                : ''}
-            </li>
-            {otherPlayersState.map((state) => (
-              <li key={state.clientId}>
-                {state.username}{' '}
-                {revealed
-                  ? state.selectedValue
-                  : state.selectedValue != null
-                  ? '✓'
-                  : ''}
-              </li>
-            ))}
-          </ul>
-        </Card>
+        <PlayerOverview
+          ownState={ownState}
+          remotePlayerStates={remotePlayerStates}
+          revealed={revealed}
+        />
       </div>
       <Stack direction="column" spacing={2}>
         <div>
@@ -138,8 +133,8 @@ export default function Page({ params }: Props): JSX.Element {
             disabled={
               revealed ||
               (ownState.selectedValue === null &&
-                otherPlayersState.every(
-                  (state) => state.selectedValue === null,
+                remotePlayerStates.every(
+                  (state) => state.isOffline || state.selectedValue === null,
                 ))
             }
             variant={'contained'}
@@ -183,8 +178,9 @@ export default function Page({ params }: Props): JSX.Element {
                 data={getUsedValues().map((value) => {
                   let count = 0;
                   if (ownState.selectedValue === value) count++;
-                  for (const state of otherPlayersState) {
-                    if (state.selectedValue === value) count++;
+                  for (const state of remotePlayerStates) {
+                    if (!state.isOffline && state.selectedValue === value)
+                      count++;
                   }
                   return count;
                 })}
