@@ -47,8 +47,8 @@ export default function Page({ params }: Props): JSX.Element {
   useEffect(() => {
     const listeners = channel
       .on('presence', { event: 'sync' }, () => {
-        const state2 = channel.presenceState<PlayerState>();
-        const remoteStates = Object.values(state2)
+        const realTimeState = channel.presenceState<PlayerState>();
+        const remoteStates = Object.values(realTimeState)
           .map((state) => ({
             clientId: state[0].clientId,
             username: state[0].username,
@@ -70,10 +70,12 @@ export default function Page({ params }: Props): JSX.Element {
     return () => {
       listeners.unsubscribe();
     };
-  }, [channel, ownState.clientId]);
+  }, [channel, ownState.clientId, resetState]);
 
   useEffect(() => {
-    channel.track(ownState);
+    if (ownState.username.length > 0) {
+      channel.track(ownState);
+    }
   }, [channel, ownState]);
 
   const updateUsername = useCallback((username: string): void => {

@@ -51,28 +51,26 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
               {formatValue(ownState)}
             </TableCell>
           </TableRow>
-          {remotePlayerStates
-            .filter((state) => state.username.length > 0)
-            .map((state) => (
-              <TableRow key={state.clientId} sx={{ color: getColor(state) }}>
-                <TableCell sx={{ padding: '8px', color: getColor(state) }}>
-                  {state.isOffline && (
-                    <WifiOffIcon sx={{ fontSize: '1em', color: 'gray' }} />
-                  )}
-                  {state.username}
-                </TableCell>
-                <TableCell
-                  align={'right'}
-                  sx={{
-                    padding: '8px',
-                    fontWeight: 'bold',
-                    color: getColor(state),
-                  }}
-                >
-                  {formatValue(state)}
-                </TableCell>
-              </TableRow>
-            ))}
+          {remotePlayerStates.map((state) => (
+            <TableRow key={state.clientId} sx={{ color: getColor(state) }}>
+              <TableCell sx={{ padding: '8px', color: getColor(state) }}>
+                {state.isOffline && (
+                  <WifiOffIcon sx={{ fontSize: '1em', color: 'gray' }} />
+                )}
+                {state.username}
+              </TableCell>
+              <TableCell
+                align={'right'}
+                sx={{
+                  padding: '8px',
+                  fontWeight: 'bold',
+                  color: getColor(state),
+                }}
+              >
+                {formatValue(state)}
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </TableContainer>
