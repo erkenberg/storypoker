@@ -12,6 +12,7 @@ import { Chart } from '@/app/table/[tableId]/chart';
 import { UsernameInput } from '@/app/table/[tableId]/username-input';
 import { useSupabaseChannel } from '@/lib/supabase';
 import { PlayerOverview } from '@/app/table/[tableId]/player-overview';
+import { Statistics } from '@/app/table/[tableId]/statistics';
 
 interface Props {
   params: { tableId: string };
@@ -171,21 +172,27 @@ export default function Page({ params }: Props): JSX.Element {
             </Stack>
           </Grid>
           <Grid item xs={12} lg={4}>
-            <div style={{ maxWidth: '400px', margin: 'auto' }}>
+            <Stack direction="column" spacing={2}>
               {revealed && (
-                <Chart
-                  data={getUsedValues().map((value) => {
-                    let count = 0;
-                    if (ownState.selectedValue === value) count++;
-                    for (const state of remotePlayerStates) {
-                      if (state.selectedValue === value) count++;
-                    }
-                    return count;
-                  })}
-                  labels={getUsedValues()}
-                />
+                <div style={{ margin: 'auto' }}>
+                  <Chart
+                    data={getUsedValues().map((value) => {
+                      let count = 0;
+                      if (ownState.selectedValue === value) count++;
+                      for (const state of remotePlayerStates) {
+                        if (state.selectedValue === value) count++;
+                      }
+                      return count;
+                    })}
+                    labels={getUsedValues()}
+                  />
+                  <Statistics
+                    ownState={ownState}
+                    remotePlayerStates={remotePlayerStates}
+                  />
+                </div>
               )}
-            </div>
+            </Stack>
           </Grid>
         </Grid>
       </Grid>
