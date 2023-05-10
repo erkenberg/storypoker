@@ -1,4 +1,4 @@
-import React, { FC, JSX } from 'react';
+import React, { FC, JSX, useCallback } from 'react';
 import {
   PlayerState,
   RemotePlayerState,
@@ -23,6 +23,16 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
   remotePlayerStates,
   revealed,
 }): JSX.Element => {
+  const getColor = useCallback(
+    (state: RemotePlayerState) => (state.isOffline ? 'gray' : undefined),
+    [],
+  );
+  const formatValue = useCallback(
+    (state: PlayerState) =>
+      revealed ? state.selectedValue : state.selectedValue != null ? '✓' : '',
+    [revealed],
+  );
+
   return (
     <TableContainer
       component={Card}
@@ -38,41 +48,31 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
               align="right"
               sx={{ padding: '8px', minWidth: '32px', fontWeight: 'bold' }}
             >
-              {revealed
-                ? ownState.selectedValue
-                : ownState.selectedValue != null
-                ? '✓'
-                : ''}
+              {formatValue(ownState)}
             </TableCell>
           </TableRow>
-          {remotePlayerStates.map((state) => (
-            <TableRow
-              key={state.clientId}
-              sx={{ color: state.isOffline ? 'gray' : undefined }}
-            >
-              <TableCell
-                sx={{
-                  padding: '8px',
-                  color: state.isOffline ? 'gray' : undefined,
-                }}
-              >
-                {state.username}
-              </TableCell>
-              <TableCell
-                align={'right'}
-                sx={{ padding: '8px', fontWeight: 'bold' }}
-              >
-                {!state.isOffline && revealed
-                  ? state.selectedValue
-                  : !state.isOffline && state.selectedValue != null
-                  ? '✓'
-                  : ''}
-                {state.isOffline && (
-                  <WifiOffIcon sx={{ fontSize: '1em', color: 'gray' }} />
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
+          {remotePlayerStates
+            .filter((state) => state.username.length > 0)
+            .map((state) => (
+              <TableRow key={state.clientId} sx={{ color: getColor(state) }}>
+                <TableCell sx={{ padding: '8px', color: getColor(state) }}>
+                  {state.isOffline && (
+                    <WifiOffIcon sx={{ fontSize: '1em', color: 'gray' }} />
+                  )}
+                  {state.username}
+                </TableCell>
+                <TableCell
+                  align={'right'}
+                  sx={{
+                    padding: '8px',
+                    fontWeight: 'bold',
+                    color: getColor(state),
+                  }}
+                >
+                  {formatValue(state)}
+                </TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </TableContainer>

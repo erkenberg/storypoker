@@ -30,6 +30,18 @@ export default function Page({ params }: Props): JSX.Element {
   >([]);
   const [revealed, setRevealed] = useState(false);
   const channel = useSupabaseChannel(`table-${tableId}`);
+  const resetState = useCallback(() => {
+    setRevealed(false);
+    setOwnState((oldState) => ({
+      ...oldState,
+      selectedValue: null,
+    }));
+    setRemotePlayerStates((oldStates) =>
+      oldStates.map((state) =>
+        state.isOffline ? { ...state, selectedValue: null } : state,
+      ),
+    );
+  }, [setRemotePlayerStates, setRevealed, setOwnState]);
 
   useEffect(() => {
     const listeners = channel
@@ -51,11 +63,7 @@ export default function Page({ params }: Props): JSX.Element {
         setRevealed(true);
       })
       .on('broadcast', { event: 'reset' }, () => {
-        setRevealed(false);
-        setOwnState((oldState) => ({
-          ...oldState,
-          selectedValue: null,
-        }));
+        resetState();
       })
       .subscribe();
     return () => {
@@ -79,9 +87,7 @@ export default function Page({ params }: Props): JSX.Element {
     cardValues.filter(
       (value) =>
         ownState.selectedValue === value ||
-        remotePlayerStates.some(
-          (state) => !state.isOffline && state.selectedValue === value,
-        ),
+        remotePlayerStates.some((state) => state.selectedValue === value),
     );
 
   return (
@@ -157,13 +163,7 @@ export default function Page({ params }: Props): JSX.Element {
                   });
                   // NOTE: channels have a default rate limit of 1 message per 100ms.
                   // After the broadcast we need to wait a bit before our updated own state can be actually properly distributed.
-                  setTimeout(() => {
-                    setRevealed(false);
-                    setOwnState((oldState) => ({
-                      ...oldState,
-                      selectedValue: null,
-                    }));
-                  }, 110);
+                  setTimeout(() => resetState(), 110);
                 }}
               >
                 Reset
@@ -178,8 +178,7 @@ export default function Page({ params }: Props): JSX.Element {
                     let count = 0;
                     if (ownState.selectedValue === value) count++;
                     for (const state of remotePlayerStates) {
-                      if (!state.isOffline && state.selectedValue === value)
-                        count++;
+                      if (state.selectedValue === value) count++;
                     }
                     return count;
                   })}
