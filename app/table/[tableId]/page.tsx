@@ -92,98 +92,103 @@ export default function Page({ params }: Props): JSX.Element {
         marginTop: '10vh',
       }}
     >
-      <Grid item xs={12} sm={4} md={3} sx={{ width: '100%' }}>
+      <Grid item xs={12} sm={4} md={2} sx={{ width: '100%' }}>
         <PlayerOverview
           ownState={ownState}
           remotePlayerStates={remotePlayerStates}
           revealed={revealed}
         />
       </Grid>
-      <Grid item xs={12} sm={8} md={5}>
-        {cardValues.map((value) => {
-          return (
-            <Button
-              disabled={revealed}
-              key={value}
-              variant={
-                ownState.selectedValue !== value ? 'outlined' : 'contained'
-              }
-              value={value}
-              sx={{ height: '80px', margin: '4px' }}
-              onClick={({ currentTarget }): void => {
-                setOwnState((oldState) => ({
-                  ...oldState,
-                  selectedValue:
-                    oldState.selectedValue === value
-                      ? null
-                      : currentTarget.value,
-                }));
-              }}
-            >
-              {value}
-            </Button>
-          );
-        })}
-        <Stack direction="row" spacing={4}>
-          <Button
-            disabled={
-              revealed ||
-              (ownState.selectedValue === null &&
-                remotePlayerStates.every(
-                  (state) => state.isOffline || state.selectedValue === null,
-                ))
-            }
-            variant={'contained'}
-            onClick={(): void => {
-              channel.send({
-                type: 'broadcast',
-                event: 'reveal',
-              });
-              setRevealed(true);
-            }}
-          >
-            Reveal
-          </Button>
-          <Button
-            variant={'contained'}
-            disabled={!revealed}
-            onClick={(): void => {
-              channel.send({
-                type: 'broadcast',
-                event: 'reset',
-              });
-              // NOTE: channels have a default rate limit of 1 message per 100ms.
-              // After the broadcast we need to wait a bit before our updated own state can be actually properly distributed.
-              setTimeout(() => {
-                setRevealed(false);
-                setOwnState((oldState) => ({
-                  ...oldState,
-                  selectedValue: null,
-                }));
-              }, 110);
-            }}
-          >
-            Reset
-          </Button>
-        </Stack>
-      </Grid>
-      <Grid item xs={12} md={4}>
-        <div style={{ maxWidth: '400px', margin: 'auto' }}>
-          {revealed && (
-            <Chart
-              data={getUsedValues().map((value) => {
-                let count = 0;
-                if (ownState.selectedValue === value) count++;
-                for (const state of remotePlayerStates) {
-                  if (!state.isOffline && state.selectedValue === value)
-                    count++;
+      <Grid item xs={12} sm={8} md={10}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} lg={8}>
+            {cardValues.map((value) => {
+              return (
+                <Button
+                  disabled={revealed}
+                  key={value}
+                  variant={
+                    ownState.selectedValue !== value ? 'outlined' : 'contained'
+                  }
+                  value={value}
+                  sx={{ height: '80px', margin: '4px' }}
+                  onClick={({ currentTarget }): void => {
+                    setOwnState((oldState) => ({
+                      ...oldState,
+                      selectedValue:
+                        oldState.selectedValue === value
+                          ? null
+                          : currentTarget.value,
+                    }));
+                  }}
+                >
+                  {value}
+                </Button>
+              );
+            })}
+            <Stack direction="row" spacing={4}>
+              <Button
+                disabled={
+                  revealed ||
+                  (ownState.selectedValue === null &&
+                    remotePlayerStates.every(
+                      (state) =>
+                        state.isOffline || state.selectedValue === null,
+                    ))
                 }
-                return count;
-              })}
-              labels={getUsedValues()}
-            />
-          )}
-        </div>
+                variant={'contained'}
+                onClick={(): void => {
+                  channel.send({
+                    type: 'broadcast',
+                    event: 'reveal',
+                  });
+                  setRevealed(true);
+                }}
+              >
+                Reveal
+              </Button>
+              <Button
+                variant={'contained'}
+                disabled={!revealed}
+                onClick={(): void => {
+                  channel.send({
+                    type: 'broadcast',
+                    event: 'reset',
+                  });
+                  // NOTE: channels have a default rate limit of 1 message per 100ms.
+                  // After the broadcast we need to wait a bit before our updated own state can be actually properly distributed.
+                  setTimeout(() => {
+                    setRevealed(false);
+                    setOwnState((oldState) => ({
+                      ...oldState,
+                      selectedValue: null,
+                    }));
+                  }, 110);
+                }}
+              >
+                Reset
+              </Button>
+            </Stack>
+          </Grid>
+          <Grid item xs={12} lg={4}>
+            <div style={{ maxWidth: '400px', margin: 'auto' }}>
+              {revealed && (
+                <Chart
+                  data={getUsedValues().map((value) => {
+                    let count = 0;
+                    if (ownState.selectedValue === value) count++;
+                    for (const state of remotePlayerStates) {
+                      if (!state.isOffline && state.selectedValue === value)
+                        count++;
+                    }
+                    return count;
+                  })}
+                  labels={getUsedValues()}
+                />
+              )}
+            </div>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );

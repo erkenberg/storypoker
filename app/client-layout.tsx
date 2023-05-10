@@ -8,5 +8,5 @@ type ClientLayoutProps = {
 };
 
 export const ClientLayout = ({ children }: ClientLayoutProps): JSX.Element => {
-  return <Container maxWidth={'lg'}>{children}</Container>;
+  return <Container maxWidth={'xl'}>{children}</Container>;
 };
