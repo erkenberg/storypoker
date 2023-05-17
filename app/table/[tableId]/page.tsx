@@ -13,6 +13,7 @@ import { UsernameInput } from '@/app/table/[tableId]/username-input';
 import { useSupabaseChannel } from '@/lib/supabase';
 import { PlayerOverview } from '@/app/table/[tableId]/player-overview';
 import { Statistics } from '@/app/table/[tableId]/statistics';
+import { useClientId } from '@/lib/use-client-id';
 
 interface Props {
   params: { tableId: string };
@@ -20,9 +21,9 @@ interface Props {
 
 export default function Page({ params }: Props): JSX.Element {
   const tableId = params.tableId;
+  const clientId = useClientId();
   const [ownState, setOwnState] = useState<PlayerState>({
-    // TODO: uuid and/or localStorage
-    clientId: `${Math.round(Math.random() * 100000)}`,
+    clientId,
     username: '',
     selectedValue: null,
   });
