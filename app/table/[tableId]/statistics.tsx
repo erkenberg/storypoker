@@ -70,11 +70,12 @@ export const Statistics: FC<StatisticsProps> = ({
 
     return (numbers[half - 1] + numbers[half]) / 2.0;
   }, [numbers]);
+  if (numbers.length < 0) return <></>;
 
   return (
     <TableContainer
       component={Card}
-      sx={{ width: 'fit-content', margin: 'auto' }}
+      sx={{ width: 'fit-content', margin: 'auto', marginTop: '16px' }}
     >
       <Table size="small">
         <TableHead>
