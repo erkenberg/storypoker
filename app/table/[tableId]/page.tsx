@@ -107,7 +107,7 @@ export default function Page({ params }: Props): JSX.Element {
         />
       </Grid>
       <Grid item xs={12} sm={8} md={10}>
-        <Grid container spacing={3}>
+        <Grid container>
           <Grid item xs={12} lg={8}>
             {cardValues.map((value) => {
               return (
@@ -133,7 +133,7 @@ export default function Page({ params }: Props): JSX.Element {
                 </Button>
               );
             })}
-            <Stack direction="row" spacing={4}>
+            <Stack direction="row" spacing={4} sx={{ marginTop: '8px' }}>
               <Button
                 disabled={
                   revealed ||
