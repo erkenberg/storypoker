@@ -51,7 +51,10 @@ export const Statistics: FC<StatisticsProps> = ({
     () =>
       numbers.length === 0
         ? null
-        : numbers.reduce((a, b) => a + b, 0) / numbers.length,
+        : Math.round(
+            (numbers.reduce((prev, current) => prev + current, 0) * 10) /
+              numbers.length,
+          ) / 10,
     [numbers],
   );
   const median = useMemo(() => {
