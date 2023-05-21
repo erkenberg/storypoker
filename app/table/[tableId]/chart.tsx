@@ -39,6 +39,7 @@ export const Chart = (props: ChartProps): JSX.Element => {
       data={{
         datasets: [
           {
+            label: '# of Votes',
             data: props.data,
             backgroundColor: props.labels.map((value) =>
               alpha(getValueColor(value)?.regular ?? 'gray', 0.4),
