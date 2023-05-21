@@ -9,11 +9,11 @@ import {
 import { cardValues } from '@/app/table/[tableId]/game-state';
 import { Button, Grid, Stack } from '@mui/material';
 import { Chart } from '@/app/table/[tableId]/chart';
-import { UsernameInput } from '@/app/table/[tableId]/username-input';
 import { useSupabaseChannel } from '@/lib/supabase';
 import { PlayerOverview } from '@/app/table/[tableId]/player-overview';
 import { Statistics } from '@/app/table/[tableId]/statistics';
 import { useClientId } from '@/lib/use-client-id';
+import { useUsername } from '@/lib/use-username';
 
 interface Props {
   params: { tableId: string };
@@ -22,9 +22,10 @@ interface Props {
 export default function Page({ params }: Props): JSX.Element {
   const tableId = params.tableId;
   const clientId = useClientId();
+  const { username } = useUsername();
   const [ownState, setOwnState] = useState<PlayerState>({
     clientId,
-    username: '',
+    username,
     selectedValue: null,
   });
   const [remotePlayerStates, setRemotePlayerStates] = useState<
@@ -79,13 +80,9 @@ export default function Page({ params }: Props): JSX.Element {
     }
   }, [channel, ownState]);
 
-  const updateUsername = useCallback((username: string): void => {
+  useEffect(() => {
     setOwnState((oldState) => ({ ...oldState, username }));
-  }, []);
-
-  if (!ownState.username) {
-    return <UsernameInput onSubmit={updateUsername} />;
-  }
+  }, [username]);
 
   const getUsedValues = (): string[] =>
     cardValues.filter(

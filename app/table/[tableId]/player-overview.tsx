@@ -10,8 +10,12 @@ import {
   Table,
   TableContainer,
   TableBody,
+  IconButton,
 } from '@mui/material';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
+import EditIcon from '@mui/icons-material/Edit';
+import { useUsername } from '@/lib/use-username';
+
 interface UsernameInputProps {
   ownState: PlayerState;
   remotePlayerStates: RemotePlayerState[];
@@ -23,6 +27,7 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
   remotePlayerStates,
   revealed,
 }): JSX.Element => {
+  const { editUsername } = useUsername();
   const getColor = useCallback(
     (state: RemotePlayerState) => (state.isOffline ? 'gray' : undefined),
     [],
@@ -41,6 +46,17 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
       <Table size="small">
         <TableBody>
           <TableRow key={ownState.clientId}>
+            <TableCell sx={{ padding: '4px' }}>
+              <IconButton
+                aria-label="edit username"
+                size="small"
+                color="primary"
+                sx={{ padding: '0' }}
+                onClick={(): void => editUsername()}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </TableCell>
             <TableCell sx={{ padding: '8px', minWidth: '100px' }}>
               {ownState.username}
             </TableCell>
@@ -53,10 +69,12 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
           </TableRow>
           {remotePlayerStates.map((state) => (
             <TableRow key={state.clientId} sx={{ color: getColor(state) }}>
-              <TableCell sx={{ padding: '8px', color: getColor(state) }}>
+              <TableCell sx={{ padding: '4px' }}>
                 {state.isOffline && (
-                  <WifiOffIcon sx={{ fontSize: '1em', color: 'gray' }} />
+                  <WifiOffIcon fontSize="small" sx={{ color: 'gray' }} />
                 )}
+              </TableCell>
+              <TableCell sx={{ padding: '8px', color: getColor(state) }}>
                 {state.username}
               </TableCell>
               <TableCell
