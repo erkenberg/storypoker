@@ -11,7 +11,10 @@ import {
   TableContainer,
   TableBody,
   TableHead,
+  SxProps,
 } from '@mui/material';
+import { getValueColor } from '@/app/table/[tableId]/game-state';
+
 interface StatisticsProps {
   ownState: PlayerState;
   remotePlayerStates: RemotePlayerState[];
@@ -72,6 +75,11 @@ export const Statistics: FC<StatisticsProps> = ({
   }, [numbers]);
   if (numbers.length < 0) return <></>;
 
+  const getSx = (value: string): SxProps => ({
+    color: getValueColor(value)?.regular,
+    fontWeight: 'bold',
+  });
+
   return (
     <TableContainer
       component={Card}
@@ -88,10 +96,10 @@ export const Statistics: FC<StatisticsProps> = ({
         </TableHead>
         <TableBody>
           <TableRow>
-            <TableCell>{min}</TableCell>
-            <TableCell>{max}</TableCell>
-            <TableCell>{mean}</TableCell>
-            <TableCell>{median}</TableCell>
+            <TableCell sx={getSx(`${min}`)}>{min}</TableCell>
+            <TableCell sx={getSx(`${max}`)}>{max}</TableCell>
+            <TableCell sx={getSx(`${mean}`)}>{mean}</TableCell>
+            <TableCell sx={getSx(`${median}`)}>{median}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

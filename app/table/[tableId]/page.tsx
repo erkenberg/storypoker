@@ -6,7 +6,7 @@ import {
   PlayerState,
   RemotePlayerState,
 } from '@/app/table/[tableId]/player-state';
-import { cardValues } from '@/app/table/[tableId]/game-state';
+import { cardValues, getValueColor } from '@/app/table/[tableId]/game-state';
 import { Button, Grid, Stack } from '@mui/material';
 import { Chart } from '@/app/table/[tableId]/chart';
 import { useSupabaseChannel } from '@/lib/supabase';
@@ -110,6 +110,8 @@ export default function Page({ params }: Props): JSX.Element {
         <Grid container>
           <Grid item xs={12} lg={8}>
             {cardValues.map((value) => {
+              const color = getValueColor(value)?.regular;
+              const colorDark = getValueColor(value)?.dark;
               return (
                 <Button
                   disabled={revealed}
@@ -118,7 +120,22 @@ export default function Page({ params }: Props): JSX.Element {
                     ownState.selectedValue !== value ? 'outlined' : 'contained'
                   }
                   value={value}
-                  sx={{ height: '80px', margin: '4px' }}
+                  sx={{
+                    height: '80px',
+                    margin: '4px',
+                    borderColor: color,
+                    color: ownState.selectedValue !== value ? color : undefined,
+                    backgroundColor:
+                      ownState.selectedValue === value ? color : undefined,
+                    '&.MuiButtonBase-root:hover': {
+                      backgroundColor:
+                        ownState.selectedValue === value
+                          ? colorDark
+                          : undefined,
+                      borderColor: colorDark,
+                    },
+                    fontWeight: 'bold',
+                  }}
                   onClick={({ currentTarget }): void => {
                     setOwnState((oldState) => ({
                       ...oldState,
