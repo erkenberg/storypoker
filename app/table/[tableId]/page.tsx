@@ -95,16 +95,16 @@ export default function Page({ params }: Props): JSX.Element {
         marginTop: '10vh',
       }}
     >
-      <Grid item xs={12} sm={4} md={2} sx={{ width: '100%' }}>
+      <Grid item xs={12} sm={4} md={3} sx={{ width: '100%' }}>
         <PlayerOverview
           ownState={ownState}
           remotePlayerStates={remotePlayerStates}
           revealed={revealed}
         />
       </Grid>
-      <Grid item xs={12} sm={8} md={10}>
+      <Grid item xs={12} sm={8} md={9}>
         <Grid container>
-          <Grid item xs={12} lg={8}>
+          <Grid item xs={12} lg={8} sx={{ marginBottom: '16px' }}>
             {cardValues.map((value) => {
               const color = getValueColor(value)?.regular;
               const colorDark = getValueColor(value)?.dark;
