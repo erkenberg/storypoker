@@ -148,14 +148,7 @@ export default function Page({ params }: Props): JSX.Element {
             })}
             <Stack direction="row" spacing={4} sx={{ marginTop: '8px' }}>
               <Button
-                disabled={
-                  revealed ||
-                  (ownState.selectedValue === null &&
-                    remotePlayerStates.every(
-                      (state) =>
-                        state.isOffline || state.selectedValue === null,
-                    ))
-                }
+                disabled={revealed || ownState.selectedValue === null}
                 variant={'contained'}
                 onClick={(): void => {
                   channel.send({
