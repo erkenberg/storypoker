@@ -184,7 +184,9 @@ export default function Page({ params }: Props): JSX.Element {
               </Button>
             </Stack>
           </Grid>
-          {revealed && <Results playerStates={mergedPlayerStates} />}
+          <Grid item xs={12} lg={4}>
+            {revealed && <Results playerStates={mergedPlayerStates} />}
+          </Grid>
         </Grid>
       </Grid>
     </Grid>
