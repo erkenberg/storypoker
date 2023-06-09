@@ -1,6 +1,6 @@
 'use client';
 
-import React, { JSX, useCallback, useEffect, useState } from 'react';
+import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   mergeRemotePlayerState,
   PlayerState,
@@ -8,12 +8,11 @@ import {
 } from '@/app/table/[tableId]/player-state';
 import { cardValues, getValueColor } from '@/app/table/[tableId]/game-state';
 import { Button, Grid, Stack } from '@mui/material';
-import { Chart } from '@/app/table/[tableId]/chart';
 import { useSupabaseChannel } from '@/lib/supabase';
 import { PlayerOverview } from '@/app/table/[tableId]/player-overview';
-import { Statistics } from '@/app/table/[tableId]/statistics';
 import { useClientId } from '@/lib/use-client-id';
 import { useUsername } from '@/lib/use-username';
+import { Results } from '@/app/table/[tableId]/results';
 
 interface Props {
   params: { tableId: string };
@@ -31,6 +30,10 @@ export default function Page({ params }: Props): JSX.Element {
   const [remotePlayerStates, setRemotePlayerStates] = useState<
     RemotePlayerState[]
   >([]);
+  const mergedPlayerStates = useMemo(
+    () => [ownState, ...remotePlayerStates.filter((state) => !state.isOffline)],
+    [ownState, remotePlayerStates],
+  );
   const [revealed, setRevealed] = useState(false);
   const channel = useSupabaseChannel(`table-${tableId}`);
   const resetState = useCallback(() => {
@@ -83,13 +86,6 @@ export default function Page({ params }: Props): JSX.Element {
   useEffect(() => {
     setOwnState((oldState) => ({ ...oldState, username }));
   }, [username]);
-
-  const getUsedValues = (): string[] =>
-    cardValues.filter(
-      (value) =>
-        ownState.selectedValue === value ||
-        remotePlayerStates.some((state) => state.selectedValue === value),
-    );
 
   return (
     <Grid
@@ -188,29 +184,7 @@ export default function Page({ params }: Props): JSX.Element {
               </Button>
             </Stack>
           </Grid>
-          <Grid item xs={12} lg={4}>
-            <Stack direction="column" spacing={2}>
-              {revealed && (
-                <div style={{ margin: 'auto' }}>
-                  <Chart
-                    data={getUsedValues().map((value) => {
-                      let count = 0;
-                      if (ownState.selectedValue === value) count++;
-                      for (const state of remotePlayerStates) {
-                        if (state.selectedValue === value) count++;
-                      }
-                      return count;
-                    })}
-                    labels={getUsedValues()}
-                  />
-                  <Statistics
-                    ownState={ownState}
-                    remotePlayerStates={remotePlayerStates}
-                  />
-                </div>
-              )}
-            </Stack>
-          </Grid>
+          {revealed && <Results playerStates={mergedPlayerStates} />}
         </Grid>
       </Grid>
     </Grid>

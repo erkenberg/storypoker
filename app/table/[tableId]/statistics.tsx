@@ -1,8 +1,5 @@
 import React, { FC, JSX, useMemo } from 'react';
-import {
-  PlayerState,
-  RemotePlayerState,
-} from '@/app/table/[tableId]/player-state';
+import { PlayerState } from '@/app/table/[tableId]/player-state';
 import {
   Card,
   TableCell,
@@ -16,32 +13,22 @@ import {
 import { getValueColor } from '@/app/table/[tableId]/game-state';
 
 interface StatisticsProps {
-  ownState: PlayerState;
-  remotePlayerStates: RemotePlayerState[];
+  playerStates: PlayerState[];
 }
 
 export const Statistics: FC<StatisticsProps> = ({
-  ownState,
-  remotePlayerStates,
+  playerStates,
 }): JSX.Element => {
-  const mergedState = useMemo(
-    () =>
-      [
-        ownState,
-        ...remotePlayerStates.filter((state) => !state.isOffline),
-      ].filter((state) => state.selectedValue != null),
-    [ownState, remotePlayerStates],
-  );
-
   const values = useMemo(
-    () => mergedState.map((state) => state.selectedValue as string),
-    [mergedState],
+    () => playerStates.map((state) => state.selectedValue as string),
+    [playerStates],
   );
   const numbers = useMemo(
     () =>
       values.flatMap((value) => (isNaN(Number(value)) ? [] : [Number(value)])),
     [values],
   );
+
   const min = useMemo(
     () => (numbers.length === 0 ? null : Math.min(...numbers)),
     [numbers],
@@ -62,18 +49,15 @@ export const Statistics: FC<StatisticsProps> = ({
   );
   const median = useMemo(() => {
     if (numbers.length === 0) return null;
-
-    numbers.sort(function (a, b) {
+    const sortedNumbers = [...numbers].sort(function (a, b) {
       return a - b;
     });
-
-    const half = Math.floor(numbers.length / 2);
-
-    if (numbers.length % 2) return numbers[half];
-
-    return (numbers[half - 1] + numbers[half]) / 2.0;
+    const half = Math.floor(sortedNumbers.length / 2);
+    return sortedNumbers.length % 2 === 1
+      ? sortedNumbers[half]
+      : (sortedNumbers[half - 1] + sortedNumbers[half]) / 2.0;
   }, [numbers]);
-  if (numbers.length < 0) return <></>;
+  if (numbers.length <= 0) return <></>;
 
   const getSx = (value: string): SxProps => ({
     color: getValueColor(value)?.regular,
