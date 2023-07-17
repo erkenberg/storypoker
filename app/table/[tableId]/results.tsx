@@ -1,4 +1,4 @@
-import React, { FC, JSX } from 'react';
+import React, { FC, JSX, useMemo } from 'react';
 import { Typography } from '@mui/material';
 import { Chart } from '@/app/table/[tableId]/chart';
 import { Statistics } from '@/app/table/[tableId]/statistics';
@@ -14,16 +14,25 @@ export const Results: FC<ResultsProps> = (props): JSX.Element => {
   const validPlayerStates = props.playerStates.filter(
     (state) => state.selectedValue != null,
   );
-  if (validPlayerStates.length === 0) return <></>;
   const usedValues = cardValues.filter((value) =>
     validPlayerStates.some((state) => state.selectedValue === value),
   );
-  const allTipsIdentical = usedValues.every((value) => value === usedValues[0]);
+  const allValuesIdentical = usedValues.every(
+    (value) => value === usedValues[0],
+  );
+  const commonValue = allValuesIdentical ? usedValues[0] : null;
+  const catSeed = useMemo(() => {
+    const date = new Date();
+    // We only update the time component of the seed every 3 Minutes to reduce the probability of two users
+    // getting a different seed when they get the results at slightly different times.
+    return `${commonValue}-${date.getMinutes() % 20}`;
+  }, [commonValue]);
 
   return (
     <div style={{ margin: 'auto' }}>
-      {allTipsIdentical ? (
+      {allValuesIdentical ? (
         <CatImage
+          seed={catSeed}
           label={
             <Typography
               variant="h6"
@@ -34,12 +43,12 @@ export const Results: FC<ResultsProps> = (props): JSX.Element => {
               <Typography
                 variant="h6"
                 sx={{
-                  color: getValueColor(usedValues[0])?.regular,
+                  color: getValueColor(commonValue)?.regular,
                   fontWeight: 'bold',
                   display: 'inline',
                 }}
               >
-                {usedValues[0]}
+                {commonValue}
               </Typography>
             </Typography>
           }
