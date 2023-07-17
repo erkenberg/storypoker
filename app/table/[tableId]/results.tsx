@@ -1,11 +1,10 @@
 import React, { FC, JSX } from 'react';
-import Image from 'next/image';
-import pokercats from '@/public/pokercats.jpg';
 import { Typography } from '@mui/material';
 import { Chart } from '@/app/table/[tableId]/chart';
 import { Statistics } from '@/app/table/[tableId]/statistics';
 import { cardValues, getValueColor } from '@/app/table/[tableId]/game-state';
 import { PlayerState } from '@/app/table/[tableId]/player-state';
+import { CatImage } from '@/app/table/[tableId]/cat-image';
 
 interface ResultsProps {
   playerStates: PlayerState[];
@@ -23,41 +22,29 @@ export const Results: FC<ResultsProps> = (props): JSX.Element => {
 
   return (
     <div style={{ margin: 'auto' }}>
-      {allTipsIdentical && (
-        <>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
-            <Image
-              src={pokercats}
-              alt="Picture of cats playing poker"
-              width={300}
-              style={{ borderRadius: '64px' }}
-            />
-          </div>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ margin: 'auto', width: 'fit-content' }}
-          >
-            All players voted for:{' '}
+      {allTipsIdentical ? (
+        <CatImage
+          label={
             <Typography
               variant="h6"
-              sx={{
-                color: getValueColor(usedValues[0])?.regular,
-                fontWeight: 'bold',
-                display: 'inline',
-              }}
+              component="div"
+              sx={{ margin: 'auto', width: 'fit-content' }}
             >
-              {usedValues[0]}
+              All players voted for:{' '}
+              <Typography
+                variant="h6"
+                sx={{
+                  color: getValueColor(usedValues[0])?.regular,
+                  fontWeight: 'bold',
+                  display: 'inline',
+                }}
+              >
+                {usedValues[0]}
+              </Typography>
             </Typography>
-          </Typography>
-        </>
-      )}
-      {!allTipsIdentical && (
+          }
+        />
+      ) : (
         <>
           <Chart
             data={usedValues.map((value) => {
