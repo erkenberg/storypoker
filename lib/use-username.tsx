@@ -55,20 +55,18 @@ export const useUsername = (): UseUsernameResult => {
         justifyContent="center"
         style={{ minHeight: '100vh' }}
       >
-        <Grid item xs={3}>
-          <form autoComplete="off" onSubmit={onFormSubmit}>
-            <Stack direction="column" spacing={2} sx={{ maxWidth: '500px' }}>
-              <FormLabel>Enter Name</FormLabel>
-              <TextField
-                required
-                focused
-                value={tmpUsername}
-                onChange={(e): void => setTmpUsername(e.target.value)}
-              />
-              <Button type="submit">Submit</Button>
-            </Stack>
-          </form>
-        </Grid>
+        <form autoComplete="off" onSubmit={onFormSubmit}>
+          <Stack direction="column" spacing={2} sx={{ maxWidth: '500px' }}>
+            <FormLabel>Enter Name</FormLabel>
+            <TextField
+              required
+              focused
+              value={tmpUsername}
+              onChange={(e): void => setTmpUsername(e.target.value)}
+            />
+            <Button type="submit">Submit</Button>
+          </Stack>
+        </form>
       </Grid>
     );
   };
