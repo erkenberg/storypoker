@@ -8,7 +8,7 @@ import {
 } from '@/app/table/[tableId]/player-state';
 import { cardValues, getValueColor } from '@/app/table/[tableId]/game-state';
 import { Button, Grid, Stack } from '@mui/material';
-import { useSupabaseChannel } from '@/lib/supabase';
+import { useSupabaseChannel } from '@/lib/supabase/use-supabase-channel';
 import { PlayerOverview } from '@/app/table/[tableId]/player-overview';
 import { useClientId } from '@/lib/use-client-id';
 import { useUsername } from '@/lib/use-username';
