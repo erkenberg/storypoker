@@ -11,6 +11,7 @@ import {
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { ColorModeContext } from '@/app/color-mode-context';
+import Link from 'next/link';
 
 export function AppBar(): JSX.Element {
   const theme = useTheme();
@@ -18,11 +19,13 @@ export function AppBar(): JSX.Element {
   return (
     <MuiAppBar position="static">
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          StoryPoker
-        </Typography>
+        <Link href="/" style={{ textDecoration: 'inherit', color: 'inherit' }}>
+          <Typography variant="h6" component="div">
+            StoryPoker
+          </Typography>
+        </Link>
         <IconButton
-          sx={{ ml: 1 }}
+          sx={{ marginLeft: 'auto' }}
           onClick={colorMode.toggleColorMode}
           color="inherit"
         >
