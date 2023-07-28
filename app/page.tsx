@@ -10,10 +10,13 @@ import {
   TextField,
 } from '@mui/material';
 import { createTable } from '@/lib/supabase/create-table';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Page(): JSX.Element {
-  const [tableName, setTableName] = useState<string>('');
+  const searchParams = useSearchParams();
+  const [tableName, setTableName] = useState<string>(
+    searchParams.get('tableName') ?? '',
+  );
   const [pendingCreateTable, setPendingCreateTable] = useState(false);
   const [tableNameError, setTableNameError] = useState<string | null>(null);
   const [creationError, setCreationError] = useState<string | null>(null);
@@ -51,7 +54,7 @@ export default function Page(): JSX.Element {
           <CircularProgress color="secondary" />
         ) : (
           <Stack direction="column" spacing={2} sx={{ maxWidth: '500px' }}>
-            <FormLabel>Create a new table</FormLabel>
+            <FormLabel>Create a new poker table</FormLabel>
             <TextField
               id="table-name"
               required
@@ -64,7 +67,9 @@ export default function Page(): JSX.Element {
                 setTableName(event.target.value);
               }}
             />
-            <Button type="submit">Submit</Button>
+            <Button type="submit" variant="contained">
+              Create
+            </Button>
           </Stack>
         )}
       </form>

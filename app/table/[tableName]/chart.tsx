@@ -2,7 +2,7 @@ import React, { JSX } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Pie } from 'react-chartjs-2';
-import { getValueColor } from '@/app/table/[tableId]/game-state';
+import { getValueColor } from '@/app/table/[tableName]/game-state';
 import { useTheme, alpha } from '@mui/material';
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);

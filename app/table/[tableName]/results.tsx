@@ -1,10 +1,10 @@
 import React, { FC, JSX, useMemo } from 'react';
 import { Typography } from '@mui/material';
-import { Chart } from '@/app/table/[tableId]/chart';
-import { Statistics } from '@/app/table/[tableId]/statistics';
-import { cardValues, getValueColor } from '@/app/table/[tableId]/game-state';
-import { PlayerState } from '@/app/table/[tableId]/player-state';
-import { CatImage } from '@/app/table/[tableId]/cat-image';
+import { Chart } from '@/app/table/[tableName]/chart';
+import { Statistics } from '@/app/table/[tableName]/statistics';
+import { cardValues, getValueColor } from '@/app/table/[tableName]/game-state';
+import { PlayerState } from '@/app/table/[tableName]/player-state';
+import { CatImage } from '@/app/table/[tableName]/cat-image';
 
 interface ResultsProps {
   playerStates: PlayerState[];

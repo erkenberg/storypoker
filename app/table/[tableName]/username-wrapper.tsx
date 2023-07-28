@@ -3,7 +3,7 @@
 import React, { JSX, ReactNode, useEffect, useState } from 'react';
 import { useUsername } from '@/lib/use-username';
 
-export default function TableLayout({
+export default function UsernameWrapper({
   children,
 }: {
   children: ReactNode;

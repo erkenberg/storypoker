@@ -5,21 +5,23 @@ import {
   mergeRemotePlayerState,
   PlayerState,
   RemotePlayerState,
-} from '@/app/table/[tableId]/player-state';
-import { cardValues, getValueColor } from '@/app/table/[tableId]/game-state';
+} from '@/app/table/[tableName]/player-state';
+import { cardValues, getValueColor } from '@/app/table/[tableName]/game-state';
 import { Button, Grid, Stack } from '@mui/material';
 import { useSupabaseChannel } from '@/lib/supabase/use-supabase-channel';
-import { PlayerOverview } from '@/app/table/[tableId]/player-overview';
+import { PlayerOverview } from '@/app/table/[tableName]/player-overview';
 import { useClientId } from '@/lib/use-client-id';
 import { useUsername } from '@/lib/use-username';
-import { Results } from '@/app/table/[tableId]/results';
+import { Results } from '@/app/table/[tableName]/results';
+import { TableData } from '@/lib/supabase/get-table-data';
 
-interface Props {
-  params: { tableId: string };
+interface ClientPageProps {
+  tableData: TableData;
 }
 
-export default function Page({ params }: Props): JSX.Element {
-  const tableId = params.tableId;
+export default function ClientPage({
+  tableData,
+}: ClientPageProps): JSX.Element {
   const clientId = useClientId();
   const { username } = useUsername();
   const [ownState, setOwnState] = useState<PlayerState>({
@@ -35,7 +37,7 @@ export default function Page({ params }: Props): JSX.Element {
     [ownState, remotePlayerStates],
   );
   const [revealed, setRevealed] = useState(false);
-  const channel = useSupabaseChannel(`table-${tableId}`);
+  const channel = useSupabaseChannel(`table-${tableData.name}`);
   const resetState = useCallback(() => {
     setRevealed(false);
     setOwnState((oldState) => ({

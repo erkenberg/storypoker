@@ -1,8 +1,8 @@
 'use server';
 
 // used as server action by the creation form
-import { createClient } from '@supabase/supabase-js';
 import { Columns, DbTables } from '@/lib/supabase/constants';
+import { createServerClient } from '@/lib/supabase/create-server-client';
 
 interface CreateTableResult {
   ok: boolean;
@@ -17,16 +17,12 @@ interface CreateTableArgs {
 export async function createTable({
   tableName,
 }: CreateTableArgs): Promise<CreateTableResult> {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
-    { auth: { persistSession: false } },
-  );
+  const supabase = createServerClient();
 
   const columns = Columns[DbTables.TABLES];
   const { count, error: countError } = await supabase
     .from(DbTables.TABLES)
-    .select('*', { count: 'exact', head: true })
+    .select('name', { count: 'estimated' })
     .eq(columns.name, tableName);
 
   if (countError) {

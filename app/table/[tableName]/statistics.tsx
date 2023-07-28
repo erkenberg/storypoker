@@ -1,5 +1,5 @@
 import React, { FC, JSX, useMemo } from 'react';
-import { PlayerState } from '@/app/table/[tableId]/player-state';
+import { PlayerState } from '@/app/table/[tableName]/player-state';
 import {
   Card,
   TableCell,
@@ -10,7 +10,7 @@ import {
   TableHead,
   SxProps,
 } from '@mui/material';
-import { getValueColor } from '@/app/table/[tableId]/game-state';
+import { getValueColor } from '@/app/table/[tableName]/game-state';
 
 interface StatisticsProps {
   playerStates: PlayerState[];
