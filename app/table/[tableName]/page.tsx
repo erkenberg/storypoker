@@ -4,9 +4,13 @@ import { getTableData } from '@/lib/supabase/get-table-data';
 import { redirect } from 'next/navigation';
 import ClientPage from '@/app/table/[tableName]/client-page';
 
+// Disable automatic nextjs fetch caching for this page to make sure it the check whether a table exists is always fresh
+export const revalidate = 0;
+
 interface PageProps {
   params: { tableName: string };
 }
+
 const Page = async ({
   params: { tableName },
 }: PageProps): Promise<JSX.Element> => {
