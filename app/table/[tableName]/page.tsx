@@ -1,10 +1,10 @@
 import React, { JSX } from 'react';
 import UsernameWrapper from '@/app/table/[tableName]/username-wrapper';
-import { getTableData } from '@/lib/supabase/get-table-data';
+import { getTableRow } from '@/lib/supabase/get-table-row';
 import { redirect } from 'next/navigation';
 import ClientPage from '@/app/table/[tableName]/client-page';
 
-// Disable automatic nextjs fetch caching for this page to make sure it the check whether a table exists is always fresh
+// Disable automatic NextJS fetch caching for this page to make sure the check whether a table exists is always fresh
 export const revalidate = 0;
 
 interface PageProps {
@@ -14,14 +14,18 @@ interface PageProps {
 const Page = async ({
   params: { tableName },
 }: PageProps): Promise<JSX.Element> => {
-  const tableData = await getTableData(tableName);
-  if (!tableData) {
+  const tableState = await getTableRow(tableName);
+  if (!tableState) {
     console.log('Table ' + tableName + " doesn't exist, redirecting");
     redirect('/?tableName=' + tableName);
   }
+
   return (
     <UsernameWrapper>
-      <ClientPage tableData={tableData} />
+      <ClientPage
+        tableName={tableName}
+        initialTableState={{ values: tableState.values }}
+      />
     </UsernameWrapper>
   );
 };

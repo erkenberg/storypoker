@@ -12,10 +12,12 @@ interface CreateTableResult {
 
 interface CreateTableArgs {
   tableName: string;
+  values: string[];
 }
 
 export async function createTable({
   tableName,
+  values,
 }: CreateTableArgs): Promise<CreateTableResult> {
   const supabase = createServerClient();
 
@@ -47,7 +49,7 @@ export async function createTable({
 
   const { error: insertError } = await supabase
     .from(DbTables.TABLES)
-    .insert({ [columns.name]: tableName, [columns.values]: [] }); // TODO: allow user to set values
+    .insert({ [columns.name]: tableName, [columns.values]: values });
 
   if (insertError) {
     console.error(`Error creating table ${tableName}:`, insertError.message);

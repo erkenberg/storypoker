@@ -6,21 +6,23 @@ import {
   PlayerState,
   RemotePlayerState,
 } from '@/app/table/[tableName]/player-state';
-import { cardValues, getValueColor } from '@/app/table/[tableName]/game-state';
+import { TableState } from '@/app/table/[tableName]/table-state';
 import { Button, Grid, Stack } from '@mui/material';
 import { useSupabaseChannel } from '@/lib/supabase/use-supabase-channel';
 import { PlayerOverview } from '@/app/table/[tableName]/player-overview';
 import { useClientId } from '@/lib/use-client-id';
 import { useUsername } from '@/lib/use-username';
 import { Results } from '@/app/table/[tableName]/results';
-import { TableData } from '@/lib/supabase/get-table-data';
+import { getValueColor } from '@/lib/value-helpers/value-colors';
 
 interface ClientPageProps {
-  tableData: TableData;
+  tableName: string;
+  initialTableState: TableState;
 }
 
 export default function ClientPage({
-  tableData,
+  tableName,
+  initialTableState,
 }: ClientPageProps): JSX.Element {
   const clientId = useClientId();
   const { username } = useUsername();
@@ -36,8 +38,39 @@ export default function ClientPage({
     () => [ownState, ...remotePlayerStates.filter((state) => !state.isOffline)],
     [ownState, remotePlayerStates],
   );
+  const [tableState, setTableState] = useState<TableState>({
+    values: initialTableState.values,
+  });
+  const backendChannel = useSupabaseChannel(
+    `table-${initialTableState}-backend`,
+  );
+  useEffect(() => {
+    const listener = backendChannel
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'tables',
+          filter: `name=eq.${tableName}`,
+        },
+        ({ new: newState }: { new: TableState }) => {
+          setTableState((oldState) => ({
+            ...oldState,
+            values: newState.values,
+          }));
+          //TODO: handle updating ownState if selected value doesn't exist anymore
+        },
+      )
+      .subscribe();
+
+    return () => {
+      listener.unsubscribe();
+    };
+  }, [backendChannel, tableName]);
+
   const [revealed, setRevealed] = useState(false);
-  const channel = useSupabaseChannel(`table-${tableData.name}`);
+  const realtimeChannel = useSupabaseChannel(`table-${tableName}-realtime`);
   const resetState = useCallback(() => {
     setRevealed(false);
     setOwnState((oldState) => ({
@@ -52,9 +85,9 @@ export default function ClientPage({
   }, [setRemotePlayerStates, setRevealed, setOwnState]);
 
   useEffect(() => {
-    const listeners = channel
+    const listeners = realtimeChannel
       .on('presence', { event: 'sync' }, () => {
-        const realTimeState = channel.presenceState<PlayerState>();
+        const realTimeState = realtimeChannel.presenceState<PlayerState>();
         const remoteStates = Object.values(realTimeState)
           .map((state) => ({
             clientId: state[0].clientId,
@@ -77,13 +110,13 @@ export default function ClientPage({
     return () => {
       listeners.unsubscribe();
     };
-  }, [channel, ownState.clientId, resetState]);
+  }, [realtimeChannel, ownState.clientId, resetState]);
 
   useEffect(() => {
     if (ownState.username.length > 0) {
-      channel.track(ownState);
+      realtimeChannel.track(ownState);
     }
-  }, [channel, ownState]);
+  }, [realtimeChannel, ownState]);
 
   useEffect(() => {
     setOwnState((oldState) => ({ ...oldState, username }));
@@ -102,14 +135,14 @@ export default function ClientPage({
           ownState={ownState}
           remotePlayerStates={remotePlayerStates}
           revealed={revealed}
+          tableState={tableState}
         />
       </Grid>
       <Grid item xs={12} sm={8} md={9}>
         <Grid container>
           <Grid item xs={12} lg={8} sx={{ marginBottom: '16px' }}>
-            {cardValues.map((value) => {
-              const color = getValueColor(value)?.regular;
-              const colorDark = getValueColor(value)?.dark;
+            {tableState.values.map((value) => {
+              const color = getValueColor(value, tableState.values);
               return (
                 <Button
                   disabled={revealed}
@@ -121,16 +154,21 @@ export default function ClientPage({
                   sx={{
                     height: '80px',
                     margin: '4px',
-                    borderColor: color,
-                    color: ownState.selectedValue !== value ? color : undefined,
+                    borderColor: color.regular,
+                    color:
+                      ownState.selectedValue !== value
+                        ? color.regular
+                        : undefined,
                     backgroundColor:
-                      ownState.selectedValue === value ? color : undefined,
+                      ownState.selectedValue === value
+                        ? color.regular
+                        : undefined,
                     '&.MuiButtonBase-root:hover': {
                       backgroundColor:
                         ownState.selectedValue === value
-                          ? colorDark
+                          ? color.dark
                           : undefined,
-                      borderColor: colorDark,
+                      borderColor: color.dark,
                     },
                     fontWeight: 'bold',
                   }}
@@ -153,7 +191,7 @@ export default function ClientPage({
                 disabled={revealed || ownState.selectedValue === null}
                 variant={'contained'}
                 onClick={(): void => {
-                  channel.send({
+                  realtimeChannel.send({
                     type: 'broadcast',
                     event: 'reveal',
                   });
@@ -166,7 +204,7 @@ export default function ClientPage({
                 variant={'contained'}
                 disabled={!revealed}
                 onClick={(): void => {
-                  channel.send({
+                  realtimeChannel.send({
                     type: 'broadcast',
                     event: 'reset',
                   });
@@ -180,7 +218,12 @@ export default function ClientPage({
             </Stack>
           </Grid>
           <Grid item xs={12} lg={4}>
-            {revealed && <Results playerStates={mergedPlayerStates} />}
+            {revealed && (
+              <Results
+                playerStates={mergedPlayerStates}
+                tableState={tableState}
+              />
+            )}
           </Grid>
         </Grid>
       </Grid>

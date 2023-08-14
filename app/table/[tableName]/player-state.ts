@@ -9,9 +9,6 @@ export interface RemotePlayerState extends PlayerState {
    * Timestamp when the client last had any activity on the shared state.
    */
   lastActive: number;
-  /**
-   *
-   */
   isOffline: boolean;
 }
 

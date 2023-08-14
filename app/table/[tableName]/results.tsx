@@ -2,19 +2,24 @@ import React, { FC, JSX, useMemo } from 'react';
 import { Typography } from '@mui/material';
 import { Chart } from '@/app/table/[tableName]/chart';
 import { Statistics } from '@/app/table/[tableName]/statistics';
-import { cardValues, getValueColor } from '@/app/table/[tableName]/game-state';
+import { TableState } from '@/app/table/[tableName]/table-state';
 import { PlayerState } from '@/app/table/[tableName]/player-state';
 import { CatImage } from '@/app/table/[tableName]/cat-image';
+import { getValueColor } from '@/lib/value-helpers/value-colors';
 
 interface ResultsProps {
   playerStates: PlayerState[];
+  tableState: TableState;
 }
 
-export const Results: FC<ResultsProps> = (props): JSX.Element => {
-  const validPlayerStates = props.playerStates.filter(
+export const Results: FC<ResultsProps> = ({
+  playerStates,
+  tableState,
+}): JSX.Element => {
+  const validPlayerStates = playerStates.filter(
     (state) => state.selectedValue != null,
   );
-  const usedValues = cardValues.filter((value) =>
+  const usedValues = tableState.values.filter((value) =>
     validPlayerStates.some((state) => state.selectedValue === value),
   );
   const allValuesIdentical = usedValues.every(
@@ -43,7 +48,9 @@ export const Results: FC<ResultsProps> = (props): JSX.Element => {
               <Typography
                 variant="h6"
                 sx={{
-                  color: getValueColor(commonValue)?.regular,
+                  color:
+                    commonValue &&
+                    getValueColor(commonValue, tableState.values).regular,
                   fontWeight: 'bold',
                   display: 'inline',
                 }}
@@ -61,11 +68,17 @@ export const Results: FC<ResultsProps> = (props): JSX.Element => {
               for (const state of validPlayerStates) {
                 if (state.selectedValue === value) count++;
               }
-              return count;
+              return {
+                value,
+                count,
+                color: getValueColor(value, tableState.values),
+              };
             })}
-            labels={usedValues}
           />
-          <Statistics playerStates={validPlayerStates} />
+          <Statistics
+            playerStates={validPlayerStates}
+            tableState={tableState}
+          />
         </>
       )}
     </div>

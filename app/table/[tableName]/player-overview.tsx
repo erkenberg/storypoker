@@ -15,18 +15,21 @@ import {
 import WifiOffIcon from '@mui/icons-material/WifiOff';
 import EditIcon from '@mui/icons-material/Edit';
 import { useUsername } from '@/lib/use-username';
-import { getValueColor } from '@/app/table/[tableName]/game-state';
+import { TableState } from '@/app/table/[tableName]/table-state';
+import { getValueColor } from '@/lib/value-helpers/value-colors';
 
 interface UsernameInputProps {
   ownState: PlayerState;
   remotePlayerStates: RemotePlayerState[];
   revealed: boolean;
+  tableState: TableState;
 }
 
 export const PlayerOverview: FC<UsernameInputProps> = ({
   ownState,
   remotePlayerStates,
   revealed,
+  tableState,
 }): JSX.Element => {
   const { editUsername } = useUsername();
   const getOfflineColor = useCallback(
@@ -67,9 +70,11 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
                 padding: '8px',
                 minWidth: '32px',
                 fontWeight: 'bold',
-                color: revealed
-                  ? getValueColor(ownState.selectedValue)?.regular
-                  : undefined,
+                color:
+                  revealed && ownState.selectedValue
+                    ? getValueColor(ownState.selectedValue, tableState.values)
+                        .regular
+                    : undefined,
               }}
             >
               {formatValue(ownState)}
@@ -94,9 +99,11 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
                   padding: '8px',
                   fontWeight: 'bold',
                   color:
-                    getOfflineColor(state) ?? revealed
-                      ? getValueColor(state.selectedValue)?.regular
-                      : undefined,
+                    getOfflineColor(state) ??
+                    (revealed && state.selectedValue
+                      ? getValueColor(state.selectedValue, tableState.values)
+                          .regular
+                      : undefined),
                 }}
               >
                 {formatValue(state)}

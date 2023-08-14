@@ -10,14 +10,17 @@ import {
   TableHead,
   SxProps,
 } from '@mui/material';
-import { getValueColor } from '@/app/table/[tableName]/game-state';
+import { TableState } from '@/app/table/[tableName]/table-state';
+import { getValueColor } from '@/lib/value-helpers/value-colors';
 
 interface StatisticsProps {
   playerStates: PlayerState[];
+  tableState: TableState;
 }
 
 export const Statistics: FC<StatisticsProps> = ({
   playerStates,
+  tableState,
 }): JSX.Element => {
   const values = useMemo(
     () => playerStates.map((state) => state.selectedValue as string),
@@ -60,7 +63,7 @@ export const Statistics: FC<StatisticsProps> = ({
   if (numbers.length <= 0) return <></>;
 
   const getSx = (value: string): SxProps => ({
-    color: getValueColor(value)?.regular,
+    color: getValueColor(value, tableState.values).regular,
     fontWeight: 'bold',
   });
 

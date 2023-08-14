@@ -2,17 +2,16 @@ import React, { JSX } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Pie } from 'react-chartjs-2';
-import { getValueColor } from '@/app/table/[tableName]/game-state';
+import { Color } from '@/lib/value-helpers/value-colors';
 import { useTheme, alpha } from '@mui/material';
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 interface ChartProps {
-  labels: string[];
-  data: number[];
+  data: { value: string; count: number; color: Color }[];
 }
 
-export const Chart = (props: ChartProps): JSX.Element => {
+export const Chart = ({ data }: ChartProps): JSX.Element => {
   const theme = useTheme();
   return (
     <Pie
@@ -22,7 +21,7 @@ export const Chart = (props: ChartProps): JSX.Element => {
           datalabels: {
             anchor: 'center',
             formatter: (value, context): string => {
-              return props.labels[context.dataIndex];
+              return data[context.dataIndex].value;
             },
             labels: {
               title: {
@@ -40,13 +39,11 @@ export const Chart = (props: ChartProps): JSX.Element => {
         datasets: [
           {
             label: '# of Votes',
-            data: props.data,
-            backgroundColor: props.labels.map((value) =>
-              alpha(getValueColor(value)?.regular ?? 'gray', 0.4),
-            ),
-            borderColor: props.labels.map(
-              (value) => getValueColor(value)?.dark,
-            ),
+            data: data.map(({ count }) => count),
+            backgroundColor: data.map(({ color }) => {
+              return alpha(color.regular, 0.4);
+            }),
+            borderColor: data.map(({ color }) => color.dark),
             borderWidth: 1,
           },
         ],

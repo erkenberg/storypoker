@@ -20,8 +20,8 @@ export default function UsernameWrapper({
   return (
     <>
       {UsernameInput && <UsernameInput />}
-      {/* If we show the usernameInput we want to hide actual page (but still render it,*/}
-      {/*  so that we keep the state if we just briefly edit our name )*/}
+      {/* If we show the usernameInput we want to hide actual page (but still render it, */}
+      {/* so that we keep the state if we just briefly edit our name) */}
       <div
         style={UsernameInput ? { visibility: 'hidden', display: 'none' } : {}}
       >
