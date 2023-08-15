@@ -14,18 +14,15 @@ interface PageProps {
 const Page = async ({
   params: { tableName },
 }: PageProps): Promise<JSX.Element> => {
-  const tableState = await getTableRow(tableName);
-  if (!tableState) {
+  const tableRow = await getTableRow(tableName);
+  if (!tableRow) {
     console.log('Table ' + tableName + " doesn't exist, redirecting");
     redirect('/?tableName=' + tableName);
   }
 
   return (
     <UsernameWrapper>
-      <ClientPage
-        tableName={tableName}
-        initialTableState={{ values: tableState.values }}
-      />
+      <ClientPage tableName={tableName} initialTableState={tableRow} />
     </UsernameWrapper>
   );
 };

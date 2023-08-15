@@ -14,6 +14,7 @@ import { useClientId } from '@/lib/use-client-id';
 import { useUsername } from '@/lib/use-username';
 import { Results } from '@/app/table/[tableName]/results';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
+import { setTableRevealed } from '@/lib/supabase/set-table-revealed';
 
 interface ClientPageProps {
   tableName: string;
@@ -38,41 +39,15 @@ export default function ClientPage({
     () => [ownState, ...remotePlayerStates.filter((state) => !state.isOffline)],
     [ownState, remotePlayerStates],
   );
-  const [tableState, setTableState] = useState<TableState>({
-    values: initialTableState.values,
-  });
-  const backendChannel = useSupabaseChannel(
+  const [tableState, setTableState] = useState<TableState>(initialTableState);
+  const [backendChannel, cleanupBackendChannel] = useSupabaseChannel(
     `table-${initialTableState}-backend`,
   );
-  useEffect(() => {
-    const listener = backendChannel
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'tables',
-          filter: `name=eq.${tableName}`,
-        },
-        ({ new: newState }: { new: TableState }) => {
-          setTableState((oldState) => ({
-            ...oldState,
-            values: newState.values,
-          }));
-          //TODO: handle updating ownState if selected value doesn't exist anymore
-        },
-      )
-      .subscribe();
 
-    return () => {
-      listener.unsubscribe();
-    };
-  }, [backendChannel, tableName]);
-
-  const [revealed, setRevealed] = useState(false);
-  const realtimeChannel = useSupabaseChannel(`table-${tableName}-realtime`);
-  const resetState = useCallback(() => {
-    setRevealed(false);
+  const [realtimeChannel, cleanupRealtimeChannel] = useSupabaseChannel(
+    `table-${tableName}-realtime`,
+  );
+  const resetPlayerStates = useCallback(() => {
     setOwnState((oldState) => ({
       ...oldState,
       selectedValue: null,
@@ -82,10 +57,39 @@ export default function ClientPage({
         state.isOffline ? { ...state, selectedValue: null } : state,
       ),
     );
-  }, [setRemotePlayerStates, setRevealed, setOwnState]);
+  }, [setRemotePlayerStates, setOwnState]);
 
   useEffect(() => {
-    const listeners = realtimeChannel
+    backendChannel
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'tables',
+          filter: `name=eq.${tableName}`,
+        },
+        ({ new: newState }: { new: TableState }) => {
+          setTableState((old) => {
+            // NOTE: somehow tableState.revealed is always false in the subscription callback, therefore
+            // we check this in the setTableState callback where the oldValue is correct.
+            if (old.revealed && !newState.revealed) {
+              resetPlayerStates();
+            }
+            return { values: newState.values, revealed: newState.revealed };
+          });
+          //TODO: handle updating ownState if selected value doesn't exist anymore
+        },
+      )
+      .subscribe();
+
+    return () => {
+      cleanupBackendChannel();
+    };
+  }, [backendChannel, cleanupBackendChannel, tableName, resetPlayerStates]);
+
+  useEffect(() => {
+    realtimeChannel
       .on('presence', { event: 'sync' }, () => {
         const realTimeState = realtimeChannel.presenceState<PlayerState>();
         const remoteStates = Object.values(realTimeState)
@@ -100,21 +104,22 @@ export default function ClientPage({
           mergeRemotePlayerState(oldRemoteStates, remoteStates),
         );
       })
-      .on('broadcast', { event: 'reveal' }, () => {
-        setRevealed(true);
-      })
-      .on('broadcast', { event: 'reset' }, () => {
-        resetState();
-      })
       .subscribe();
     return () => {
-      listeners.unsubscribe();
+      cleanupRealtimeChannel();
     };
-  }, [realtimeChannel, ownState.clientId, resetState]);
+  }, [
+    realtimeChannel,
+    cleanupRealtimeChannel,
+    ownState.clientId,
+    resetPlayerStates,
+  ]);
 
   useEffect(() => {
     if (ownState.username.length > 0) {
-      realtimeChannel.track(ownState);
+      realtimeChannel
+        .track(ownState)
+        .catch(() => console.error('Error sending local state'));
     }
   }, [realtimeChannel, ownState]);
 
@@ -134,7 +139,7 @@ export default function ClientPage({
         <PlayerOverview
           ownState={ownState}
           remotePlayerStates={remotePlayerStates}
-          revealed={revealed}
+          revealed={tableState.revealed}
           tableState={tableState}
         />
       </Grid>
@@ -145,7 +150,7 @@ export default function ClientPage({
               const color = getValueColor(value, tableState.values);
               return (
                 <Button
-                  disabled={revealed}
+                  disabled={tableState.revealed}
                   key={value}
                   variant={
                     ownState.selectedValue !== value ? 'outlined' : 'contained'
@@ -188,37 +193,29 @@ export default function ClientPage({
             })}
             <Stack direction="row" spacing={4} sx={{ marginTop: '8px' }}>
               <Button
-                disabled={revealed || ownState.selectedValue === null}
+                disabled={
+                  tableState.revealed || ownState.selectedValue === null
+                }
                 variant={'contained'}
-                onClick={(): void => {
-                  realtimeChannel.send({
-                    type: 'broadcast',
-                    event: 'reveal',
-                  });
-                  setRevealed(true);
-                }}
+                onClick={(): Promise<void> =>
+                  setTableRevealed({ tableName, revealed: true })
+                }
               >
                 Reveal
               </Button>
               <Button
                 variant={'contained'}
-                disabled={!revealed}
-                onClick={(): void => {
-                  realtimeChannel.send({
-                    type: 'broadcast',
-                    event: 'reset',
-                  });
-                  // NOTE: channels have a default rate limit of 1 message per 100ms.
-                  // After the broadcast we need to wait a bit before our updated own state can be actually properly distributed.
-                  setTimeout(() => resetState(), 110);
-                }}
+                disabled={!tableState.revealed}
+                onClick={(): Promise<void> =>
+                  setTableRevealed({ tableName, revealed: false })
+                }
               >
                 Reset
               </Button>
             </Stack>
           </Grid>
           <Grid item xs={12} lg={4}>
-            {revealed && (
+            {tableState.revealed && (
               <Results
                 playerStates={mergedPlayerStates}
                 tableState={tableState}
