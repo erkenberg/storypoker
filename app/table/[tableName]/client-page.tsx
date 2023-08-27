@@ -6,7 +6,7 @@ import {
   PlayerState,
   RemotePlayerState,
 } from '@/app/table/[tableName]/state/player-state';
-import { TableState } from '@/app/table/[tableName]/state/table-state';
+import { TableState } from '@/lib/supabase/table-state';
 import { Button, Grid, Stack } from '@mui/material';
 import { useSupabaseChannel } from '@/lib/supabase/use-supabase-channel';
 import { PlayerOverview } from '@/app/table/[tableName]/components/player-overview';
@@ -15,6 +15,7 @@ import { useUsername } from '@/lib/use-username';
 import { Results } from '@/app/table/[tableName]/components/results';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 import { setTableRevealed } from '@/lib/supabase/set-table-revealed';
+import { getRandomImageIndex } from '@/app/table/[tableName]/components/cat-image';
 
 interface ClientPageProps {
   tableName: string;
@@ -76,7 +77,7 @@ export default function ClientPage({
             if (old.revealed && !newState.revealed) {
               resetPlayerStates();
             }
-            return { values: newState.values, revealed: newState.revealed };
+            return newState;
           });
           //TODO: handle updating ownState if selected value doesn't exist anymore
         },
@@ -198,7 +199,11 @@ export default function ClientPage({
                 }
                 variant={'contained'}
                 onClick={(): Promise<void> =>
-                  setTableRevealed({ tableName, revealed: true })
+                  setTableRevealed({
+                    tableName,
+                    revealed: true,
+                    image_index: getRandomImageIndex(),
+                  })
                 }
               >
                 Reveal

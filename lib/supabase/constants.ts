@@ -14,7 +14,8 @@ export const Columns = {
     name: 'name',
     revealed: 'revealed',
     values: 'values',
-    createdAt: 'created_at',
+    created: 'created',
     updated: 'updated',
+    image_index: 'image_index',
   },
 } as const;

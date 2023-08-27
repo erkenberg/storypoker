@@ -1,8 +1,8 @@
-import React, { FC, JSX, useMemo } from 'react';
+import React, { FC, JSX } from 'react';
 import { Typography } from '@mui/material';
 import { Chart } from '@/app/table/[tableName]/components/chart';
 import { Statistics } from '@/app/table/[tableName]/components/statistics';
-import { TableState } from '@/app/table/[tableName]/state/table-state';
+import { TableState } from '@/lib/supabase/table-state';
 import { PlayerState } from '@/app/table/[tableName]/state/player-state';
 import { CatImage } from '@/app/table/[tableName]/components/cat-image';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
@@ -26,18 +26,12 @@ export const Results: FC<ResultsProps> = ({
     (value) => value === usedValues[0],
   );
   const commonValue = allValuesIdentical ? usedValues[0] : null;
-  const catSeed = useMemo(() => {
-    const date = new Date();
-    // We only update the time component of the seed every 3 Minutes to reduce the probability of two users
-    // getting a different seed when they get the results at slightly different times.
-    return `${commonValue}-${date.getMinutes() % 20}`;
-  }, [commonValue]);
 
   return (
     <div style={{ margin: 'auto' }}>
       {allValuesIdentical ? (
         <CatImage
-          seed={catSeed}
+          imageIndex={tableState.image_index}
           label={
             <Typography
               variant="h6"

@@ -1,6 +1,5 @@
 import React, { FC, JSX, ReactNode } from 'react';
-import Image, { StaticImageData } from 'next/image';
-import seedrandom from 'seedrandom';
+import Image from 'next/image';
 import a_cat_looking_like_james_bond_playing_cards_5e83ac83_3bb3_45cd_9e64_b9ad2aa63765 from '@/public/pokercats/a_cat_looking_like_james_bond_playing_cards_5e83ac83-3bb3-45cd-9e64-b9ad2aa63765.png';
 import aristocats_playing_cards_cd7d8475_f693_4b68_88e5_042db260e28c from '@/public/pokercats/aristocats_playing_cards_cd7d8475-f693-4b68-88e5-042db260e28c.png';
 import beautiful_bright_pastel_painging_of_cute_kittens_pl_2cea83f4_4c42_4581_b3ee_a6a4c46cdc44 from '@/public/pokercats/beautiful_bright_pastel_painging_of_cute_kittens_pl_2cea83f4-4c42-4581-b3ee-a6a4c46cdc44.png';
@@ -101,17 +100,19 @@ const images = [
   pokercats,
 ];
 
-const getRandomImage = (seed: string): StaticImageData => {
-  const random = seedrandom(seed);
-  return images[Math.round(random() * (images.length - 1))];
+export const getRandomImageIndex = (): number => {
+  return Math.round(Math.random() * (images.length - 1));
 };
 
 interface CatImageProps {
   label: ReactNode;
-  seed: string;
+  imageIndex: number;
 }
 
-export const CatImage: FC<CatImageProps> = ({ label, seed }): JSX.Element => {
+export const CatImage: FC<CatImageProps> = ({
+  label,
+  imageIndex,
+}): JSX.Element => {
   return (
     <div style={{ margin: 'auto' }}>
       <div
@@ -122,7 +123,7 @@ export const CatImage: FC<CatImageProps> = ({ label, seed }): JSX.Element => {
       >
         <Image
           placeholder="blur"
-          src={getRandomImage(seed)}
+          src={images[imageIndex % images.length]}
           alt="Picture of cats playing poker"
           width={300}
           style={{ borderRadius: '64px' }}

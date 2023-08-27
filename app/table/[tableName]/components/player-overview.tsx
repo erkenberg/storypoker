@@ -15,7 +15,7 @@ import {
 import WifiOffIcon from '@mui/icons-material/WifiOff';
 import EditIcon from '@mui/icons-material/Edit';
 import { useUsername } from '@/lib/use-username';
-import { TableState } from '@/app/table/[tableName]/state/table-state';
+import { TableState } from '@/lib/supabase/table-state';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 
 interface UsernameInputProps {

@@ -1,6 +1,6 @@
 import React, { JSX } from 'react';
 import UsernameWrapper from '@/app/table/[tableName]/components/username-wrapper';
-import { getTableRow } from '@/lib/supabase/get-table-row';
+import { getTableState } from '@/lib/supabase/table-state';
 import { redirect } from 'next/navigation';
 import ClientPage from '@/app/table/[tableName]/client-page';
 
@@ -14,15 +14,15 @@ interface PageProps {
 const Page = async ({
   params: { tableName },
 }: PageProps): Promise<JSX.Element> => {
-  const tableRow = await getTableRow(tableName);
-  if (!tableRow) {
+  const tableState = await getTableState(tableName);
+  if (!tableState) {
     console.log('Table ' + tableName + " doesn't exist, redirecting");
     redirect('/?tableName=' + tableName);
   }
 
   return (
     <UsernameWrapper>
-      <ClientPage tableName={tableName} initialTableState={tableRow} />
+      <ClientPage tableName={tableName} initialTableState={tableState} />
     </UsernameWrapper>
   );
 };
