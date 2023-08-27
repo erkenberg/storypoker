@@ -5,14 +5,14 @@ import {
   mergeRemotePlayerState,
   PlayerState,
   RemotePlayerState,
-} from '@/app/table/[tableName]/player-state';
-import { TableState } from '@/app/table/[tableName]/table-state';
+} from '@/app/table/[tableName]/state/player-state';
+import { TableState } from '@/app/table/[tableName]/state/table-state';
 import { Button, Grid, Stack } from '@mui/material';
 import { useSupabaseChannel } from '@/lib/supabase/use-supabase-channel';
-import { PlayerOverview } from '@/app/table/[tableName]/player-overview';
+import { PlayerOverview } from '@/app/table/[tableName]/components/player-overview';
 import { useClientId } from '@/lib/use-client-id';
 import { useUsername } from '@/lib/use-username';
-import { Results } from '@/app/table/[tableName]/results';
+import { Results } from '@/app/table/[tableName]/components/results';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 import { setTableRevealed } from '@/lib/supabase/set-table-revealed';
 

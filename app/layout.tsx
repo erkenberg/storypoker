@@ -2,7 +2,7 @@ import { Metadata } from 'next/dist/lib/metadata/types/metadata-interface';
 
 import { MuiSetup } from './mui-setup';
 import { JSX, ReactNode } from 'react';
-import { AppBar } from '@/app/app-bar';
+import { AppBar } from '@/app/table/components/app-bar';
 import { Container } from '@mui/material';
 
 export const metadata: Metadata = {

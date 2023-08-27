@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { ColorModeContext } from '@/app/color-mode-context';
+import { ColorModeContext } from '@/app/table/components/color-mode-context';
 import Link from 'next/link';
 
 export function AppBar(): JSX.Element {

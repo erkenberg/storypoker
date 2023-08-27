@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import UsernameWrapper from '@/app/table/[tableName]/username-wrapper';
+import UsernameWrapper from '@/app/table/[tableName]/components/username-wrapper';
 import { getTableRow } from '@/lib/supabase/get-table-row';
 import { redirect } from 'next/navigation';
 import ClientPage from '@/app/table/[tableName]/client-page';

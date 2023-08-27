@@ -1,10 +1,10 @@
 import React, { FC, JSX, useMemo } from 'react';
 import { Typography } from '@mui/material';
-import { Chart } from '@/app/table/[tableName]/chart';
-import { Statistics } from '@/app/table/[tableName]/statistics';
-import { TableState } from '@/app/table/[tableName]/table-state';
-import { PlayerState } from '@/app/table/[tableName]/player-state';
-import { CatImage } from '@/app/table/[tableName]/cat-image';
+import { Chart } from '@/app/table/[tableName]/components/chart';
+import { Statistics } from '@/app/table/[tableName]/components/statistics';
+import { TableState } from '@/app/table/[tableName]/state/table-state';
+import { PlayerState } from '@/app/table/[tableName]/state/player-state';
+import { CatImage } from '@/app/table/[tableName]/components/cat-image';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 
 interface ResultsProps {

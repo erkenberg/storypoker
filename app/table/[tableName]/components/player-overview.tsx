@@ -2,7 +2,7 @@ import React, { FC, JSX, useCallback } from 'react';
 import {
   PlayerState,
   RemotePlayerState,
-} from '@/app/table/[tableName]/player-state';
+} from '@/app/table/[tableName]/state/player-state';
 import {
   Card,
   TableCell,
@@ -15,7 +15,7 @@ import {
 import WifiOffIcon from '@mui/icons-material/WifiOff';
 import EditIcon from '@mui/icons-material/Edit';
 import { useUsername } from '@/lib/use-username';
-import { TableState } from '@/app/table/[tableName]/table-state';
+import { TableState } from '@/app/table/[tableName]/state/table-state';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 
 interface UsernameInputProps {

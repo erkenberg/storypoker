@@ -9,7 +9,7 @@ import {
 import { JSX, ReactNode, useMemo, useState } from 'react';
 import { NextAppDirEmotionCacheProvider } from 'tss-react/next/appDir';
 
-import { ColorModeContext } from '@/app/color-mode-context';
+import { ColorModeContext } from '@/app/table/components/color-mode-context';
 
 type MuiSetupProps = {
   children: ReactNode;
