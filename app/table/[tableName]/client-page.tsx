@@ -158,7 +158,8 @@ export default function ClientPage({
                   }
                   value={value}
                   sx={{
-                    height: '80px',
+                    height: '100px',
+                    minWidth: '70px',
                     margin: '4px',
                     borderColor: color.regular,
                     color:
@@ -177,6 +178,7 @@ export default function ClientPage({
                       borderColor: color.dark,
                     },
                     fontWeight: 'bold',
+                    fontSize: '1.4em',
                   }}
                   onClick={({ currentTarget }): void => {
                     setOwnState((oldState) => ({
