@@ -146,7 +146,7 @@ export default function ClientPage({
       </Grid>
       <Grid item xs={12} sm={8} md={9}>
         <Grid container>
-          <Grid item xs={12} lg={8} sx={{ marginBottom: '16px' }}>
+          <Grid item xs={12} lg={5} sx={{ marginBottom: '16px' }}>
             {tableState.values.map((value) => {
               const color = getValueColor(value, tableState.values);
               return (
