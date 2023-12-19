@@ -19,7 +19,7 @@ export default function RootLayout({
       <body>
         <MuiSetup>
           <AppBar />
-          <Container maxWidth={'xl'}>{children}</Container>;
+          <Container maxWidth={'xl'}>{children}</Container>
         </MuiSetup>
       </body>
     </html>
