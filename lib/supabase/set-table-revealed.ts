@@ -24,5 +24,6 @@ export async function setTableRevealed({
       [columns.revealed]: revealed,
       [columns.image_index]: image_index,
     })
-    .eq(columns.name, tableName);
+    .eq(columns.name, tableName)
+    .is(columns.revealed, !revealed); // only update if state differs
 }
