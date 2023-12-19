@@ -42,7 +42,7 @@ export default function ClientPage({
   );
   const [tableState, setTableState] = useState<TableState>(initialTableState);
   const [backendChannel, cleanupBackendChannel] = useSupabaseChannel(
-    `table-${initialTableState}-backend`,
+    `table-${tableName}-backend`,
   );
 
   const [realtimeChannel, cleanupRealtimeChannel] = useSupabaseChannel(
