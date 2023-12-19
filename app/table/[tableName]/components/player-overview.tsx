@@ -42,6 +42,10 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
     [revealed],
   );
 
+  const ownColor =
+    revealed && ownState.selectedValue
+      ? getValueColor(ownState.selectedValue, tableState.values).regular
+      : undefined;
   return (
     <TableContainer
       component={Card}
@@ -61,7 +65,15 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
                 <EditIcon fontSize="small" />
               </IconButton>
             </TableCell>
-            <TableCell sx={{ padding: '8px', minWidth: '100px' }}>
+            <TableCell
+              sx={{
+                padding: '8px',
+                minWidth: '100px',
+                color: ownColor,
+                fontWeight:
+                  revealed && ownState.selectedValue ? 'bold' : undefined,
+              }}
+            >
               {ownState.username}
             </TableCell>
             <TableCell
@@ -70,46 +82,47 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
                 padding: '8px',
                 minWidth: '32px',
                 fontWeight: 'bold',
-                color:
-                  revealed && ownState.selectedValue
-                    ? getValueColor(ownState.selectedValue, tableState.values)
-                        .regular
-                    : undefined,
+                color: ownColor,
               }}
             >
               {formatValue(ownState)}
             </TableCell>
           </TableRow>
-          {remotePlayerStates.map((state) => (
-            <TableRow
-              key={state.clientId}
-              sx={{ color: getOfflineColor(state) }}
-            >
-              <TableCell sx={{ padding: '4px' }}>
-                {state.isOffline && (
-                  <WifiOffIcon fontSize="small" sx={{ color: 'gray' }} />
-                )}
-              </TableCell>
-              <TableCell sx={{ padding: '8px', color: getOfflineColor(state) }}>
-                {state.username}
-              </TableCell>
-              <TableCell
-                align={'right'}
-                sx={{
-                  padding: '8px',
-                  fontWeight: 'bold',
-                  color:
-                    getOfflineColor(state) ??
-                    (revealed && state.selectedValue
-                      ? getValueColor(state.selectedValue, tableState.values)
-                          .regular
-                      : undefined),
-                }}
+          {remotePlayerStates.map((state) => {
+            const color =
+              getOfflineColor(state) ??
+              (revealed && state.selectedValue
+                ? getValueColor(state.selectedValue, tableState.values).regular
+                : undefined);
+            return (
+              <TableRow
+                key={state.clientId}
+                sx={{ color: getOfflineColor(state) }}
               >
-                {formatValue(state)}
-              </TableCell>
-            </TableRow>
-          ))}
+                <TableCell sx={{ padding: '4px' }}>
+                  {state.isOffline && (
+                    <WifiOffIcon fontSize="small" sx={{ color: 'gray' }} />
+                  )}
+                </TableCell>
+                <TableCell
+                  sx={{
+                    padding: '8px',
+                    color,
+                    fontWeight:
+                      revealed && state.selectedValue ? 'bold' : undefined,
+                  }}
+                >
+                  {state.username}
+                </TableCell>
+                <TableCell
+                  align={'right'}
+                  sx={{ padding: '8px', fontWeight: 'bold', color }}
+                >
+                  {formatValue(state)}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </TableContainer>

@@ -166,6 +166,10 @@ export default function ClientPage({
                       ownState.selectedValue !== value
                         ? color.regular
                         : undefined,
+                    WebkitTextStroke:
+                      ownState.selectedValue !== value || tableState.revealed
+                        ? `0.5px ${color.dark}`
+                        : undefined,
                     backgroundColor:
                       ownState.selectedValue === value
                         ? color.regular
@@ -177,7 +181,6 @@ export default function ClientPage({
                           : undefined,
                       borderColor: color.dark,
                     },
-                    fontWeight: 'bold',
                     fontSize: '1.4em',
                   }}
                   onClick={({ currentTarget }): void => {
