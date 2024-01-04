@@ -4,7 +4,7 @@ import { Chart } from '@/app/table/[tableName]/components/chart';
 import { Statistics } from '@/app/table/[tableName]/components/statistics';
 import { TableState } from '@/lib/supabase/table-state';
 import { PlayerState } from '@/app/table/[tableName]/state/player-state';
-import { CatImage } from '@/app/table/[tableName]/components/cat-image';
+import { Images } from '@/app/table/[tableName]/components/images';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 
 interface ResultsProps {
@@ -30,7 +30,7 @@ export const Results: FC<ResultsProps> = ({
   return (
     <div style={{ margin: 'auto' }}>
       {allValuesIdentical ? (
-        <CatImage
+        <Images
           imageIndex={tableState.image_index}
           label={
             <Typography

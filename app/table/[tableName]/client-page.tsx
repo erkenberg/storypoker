@@ -15,7 +15,7 @@ import { useUsername } from '@/lib/use-username';
 import { Results } from '@/app/table/[tableName]/components/results';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 import { setTableRevealed } from '@/lib/supabase/set-table-revealed';
-import { getRandomImageIndex } from '@/app/table/[tableName]/components/cat-image';
+import { getRandomImageIndex } from '@/app/table/[tableName]/components/images';
 
 interface ClientPageProps {
   tableName: string;
