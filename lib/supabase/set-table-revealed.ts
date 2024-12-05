@@ -14,7 +14,7 @@ export async function setTableRevealed({
   revealed,
   image_index,
 }: SetTableRevealedArgs): Promise<void> {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const columns = Columns[DbTables.TABLES];
 

@@ -13,7 +13,7 @@ export interface TableState {
 export async function getTableState(
   tableName: string,
 ): Promise<TableState | null> {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const columns = Columns[DbTables.TABLES];
   const { error, data } = await supabase

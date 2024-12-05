@@ -19,7 +19,7 @@ export async function createTable({
   tableName,
   values,
 }: CreateTableArgs): Promise<CreateTableResult> {
-  const supabase = createServerClient();
+  const supabase = await createServerClient();
 
   const columns = Columns[DbTables.TABLES];
   const { count, error: countError } = await supabase
