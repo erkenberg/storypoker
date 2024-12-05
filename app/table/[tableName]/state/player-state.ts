@@ -12,6 +12,8 @@ export interface RemotePlayerState extends PlayerState {
   isOffline: boolean;
 }
 
+const maxInactiveTime = 5 * 60 * 1000;
+
 export const mergeRemotePlayerState = (
   oldRemotePlayerStates: RemotePlayerState[],
   newRemotePlayerStates: PlayerState[],
@@ -22,15 +24,14 @@ export const mergeRemotePlayerState = (
   );
 
   const inactiveRemotePlayerStates = oldRemotePlayerStates
-    .filter((state) => {
-      return (
-        // remove clients that are inactive for more than 1 minute
+    .filter(
+      (state) =>
+        // remove clients that are inactive for more than 5 minutes
         (state.lastActive === undefined ||
-          now - state.lastActive < 60 * 1000) &&
+          now - state.lastActive < maxInactiveTime) &&
         // remove clients that are active
-        !currentlyActiveClientIds.includes(state.clientId)
-      );
-    })
+        !currentlyActiveClientIds.includes(state.clientId),
+    )
     .map((state) => ({ ...state, lastActive: now, isOffline: true }));
   const newRemotePlayerStatesWithActive = newRemotePlayerStates.map(
     (state) => ({ ...state, lastActive: now, isOffline: false }),
