@@ -17,10 +17,9 @@ export const mergeRemotePlayerState = (
   newRemotePlayerStates: PlayerState[],
 ): RemotePlayerState[] => {
   const now = Date.now();
-  const currentlyActiveClientIds = newRemotePlayerStates
-    // For some reason sometimes state with an empty clientId is shared/created, filter those out
-    .filter(({ clientId }) => clientId && clientId.length > 0)
-    .map(({ clientId }) => clientId);
+  const currentlyActiveClientIds = newRemotePlayerStates.map(
+    ({ clientId }) => clientId,
+  );
 
   const inactiveRemotePlayerStates = oldRemotePlayerStates
     .filter((state) => {
@@ -33,9 +32,8 @@ export const mergeRemotePlayerState = (
       );
     })
     .map((state) => ({ ...state, lastActive: now, isOffline: true }));
-  const newRemotePlayerStatesWithActive = newRemotePlayerStates
-    .filter(({ clientId }) => currentlyActiveClientIds.includes(clientId))
-    .map((state) => ({ ...state, lastActive: now, isOffline: false }));
-
+  const newRemotePlayerStatesWithActive = newRemotePlayerStates.map(
+    (state) => ({ ...state, lastActive: now, isOffline: false }),
+  );
   return [...newRemotePlayerStatesWithActive, ...inactiveRemotePlayerStates];
 };
