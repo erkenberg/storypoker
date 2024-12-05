@@ -23,6 +23,7 @@ export async function setTableRevealed({
     .update({
       [columns.revealed]: revealed,
       [columns.image_index]: image_index,
+      [columns.updated]: new Date().toISOString(),
     })
     .eq(columns.name, tableName)
     .is(columns.revealed, !revealed); // only update if state differs
