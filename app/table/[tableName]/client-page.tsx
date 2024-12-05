@@ -16,6 +16,7 @@ import { Results } from '@/app/table/[tableName]/components/results';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 import { setTableRevealed } from '@/lib/supabase/set-table-revealed';
 import { getRandomImageIndex } from '@/app/table/[tableName]/components/images';
+import { useLocalStorage } from 'usehooks-ts';
 
 interface ClientPageProps {
   tableName: string;
@@ -28,11 +29,20 @@ export default function ClientPage({
 }: ClientPageProps): JSX.Element {
   const clientId = useClientId();
   const { username } = useUsername();
-  const [ownState, setOwnState] = useState<PlayerState>({
-    clientId,
-    username,
-    selectedValue: null,
-  });
+  const [selectedValue, setSelectedValue] = useLocalStorage<string | null>(
+    `${tableName}_selected`,
+    null,
+  );
+
+  const ownState = useMemo(
+    () => ({
+      clientId,
+      username,
+      selectedValue,
+    }),
+    [clientId, username, selectedValue],
+  );
+
   const [remotePlayerStates, setRemotePlayerStates] = useState<
     RemotePlayerState[]
   >([]);
@@ -49,16 +59,13 @@ export default function ClientPage({
     `table-${tableName}-realtime`,
   );
   const resetPlayerStates = useCallback(() => {
-    setOwnState((oldState) => ({
-      ...oldState,
-      selectedValue: null,
-    }));
+    setSelectedValue(null);
     setRemotePlayerStates((oldStates) =>
       oldStates.map((state) =>
         state.isOffline ? { ...state, selectedValue: null } : state,
       ),
     );
-  }, [setRemotePlayerStates, setOwnState]);
+  }, [setRemotePlayerStates, setSelectedValue]);
 
   useEffect(() => {
     backendChannel
@@ -124,9 +131,9 @@ export default function ClientPage({
     }
   }, [realtimeChannel, ownState]);
 
-  useEffect(() => {
-    setOwnState((oldState) => ({ ...oldState, username }));
-  }, [username]);
+  // useEffect(() => {
+  //   setOwnState((oldState) => ({ ...oldState, username }));
+  // }, [username]);
 
   return (
     <Grid
@@ -153,44 +160,31 @@ export default function ClientPage({
                 <Button
                   disabled={tableState.revealed}
                   key={value}
-                  variant={
-                    ownState.selectedValue !== value ? 'outlined' : 'contained'
-                  }
+                  variant={selectedValue !== value ? 'outlined' : 'contained'}
                   value={value}
                   sx={{
                     height: '100px',
                     minWidth: '70px',
                     margin: '4px',
                     borderColor: color.regular,
-                    color:
-                      ownState.selectedValue !== value
-                        ? color.regular
-                        : undefined,
+                    color: selectedValue !== value ? color.regular : undefined,
                     WebkitTextStroke:
-                      ownState.selectedValue !== value || tableState.revealed
+                      selectedValue !== value || tableState.revealed
                         ? `0.5px ${color.dark}`
                         : undefined,
                     backgroundColor:
-                      ownState.selectedValue === value
-                        ? color.regular
-                        : undefined,
+                      selectedValue === value ? color.regular : undefined,
                     '&.MuiButtonBase-root:hover': {
                       backgroundColor:
-                        ownState.selectedValue === value
-                          ? color.dark
-                          : undefined,
+                        selectedValue === value ? color.dark : undefined,
                       borderColor: color.dark,
                     },
                     fontSize: '1.4em',
                   }}
                   onClick={({ currentTarget }): void => {
-                    setOwnState((oldState) => ({
-                      ...oldState,
-                      selectedValue:
-                        oldState.selectedValue === value
-                          ? null
-                          : currentTarget.value,
-                    }));
+                    setSelectedValue((oldValue) =>
+                      oldValue === value ? null : currentTarget.value,
+                    );
                   }}
                 >
                   {value}
@@ -199,9 +193,7 @@ export default function ClientPage({
             })}
             <Stack direction="row" spacing={4} sx={{ marginTop: '24px' }}>
               <Button
-                disabled={
-                  tableState.revealed || ownState.selectedValue === null
-                }
+                disabled={tableState.revealed || selectedValue === null}
                 variant={'contained'}
                 onClick={(): Promise<void> =>
                   setTableRevealed({
