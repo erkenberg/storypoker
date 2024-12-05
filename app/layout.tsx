@@ -1,7 +1,7 @@
 import { Metadata } from 'next/dist/lib/metadata/types/metadata-interface';
 
 import { MuiSetup } from './mui-setup';
-import { JSX, ReactNode } from 'react';
+import { JSX, ReactNode, Suspense } from 'react';
 import { AppBar } from '@/app/table/components/app-bar';
 import { Container } from '@mui/material';
 
@@ -19,7 +19,9 @@ export default function RootLayout({
       <body>
         <MuiSetup>
           <AppBar />
-          <Container maxWidth={'xl'}>{children}</Container>
+          <Suspense>
+            <Container maxWidth={'xl'}>{children}</Container>
+          </Suspense>
         </MuiSetup>
       </body>
     </html>
