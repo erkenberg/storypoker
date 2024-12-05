@@ -197,7 +197,7 @@ export default function ClientPage({
                 </Button>
               );
             })}
-            <Stack direction="row" spacing={4} sx={{ marginTop: '8px' }}>
+            <Stack direction="row" spacing={4} sx={{ marginTop: '24px' }}>
               <Button
                 disabled={
                   tableState.revealed || ownState.selectedValue === null
