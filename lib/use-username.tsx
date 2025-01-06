@@ -7,7 +7,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { Button, FormLabel, Grid, Stack, TextField } from '@mui/material';
+import { Button, FormLabel, Grid2, Stack, TextField } from '@mui/material';
 
 interface UseUsernameResult {
   username: string;
@@ -47,7 +47,7 @@ export const useUsername = (): UseUsernameResult => {
       [tmpUsername],
     );
     return (
-      <Grid
+      <Grid2
         container
         spacing={0}
         direction="column"
@@ -67,7 +67,7 @@ export const useUsername = (): UseUsernameResult => {
             <Button type="submit">Submit</Button>
           </Stack>
         </form>
-      </Grid>
+      </Grid2>
     );
   };
 

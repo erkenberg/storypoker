@@ -7,7 +7,7 @@ import {
   RemotePlayerState,
 } from '@/app/table/[tableName]/state/player-state';
 import { TableState } from '@/lib/supabase/table-state';
-import { Button, FormControlLabel, Grid, Stack, Switch } from '@mui/material';
+import { Button, FormControlLabel, Grid2, Stack, Switch } from '@mui/material';
 import { useSupabaseChannel } from '@/lib/supabase/use-supabase-channel';
 import { PlayerOverview } from '@/app/table/[tableName]/components/player-overview';
 import { useClientId } from '@/lib/use-client-id';
@@ -136,8 +136,8 @@ export default function ClientPage({
   }, [realtimeChannel, ownState]);
 
   return (
-    <Grid container spacing={2}>
-      <Grid xs={12} item sx={{ width: '100%', marginBottom: '5vh' }}>
+    <Grid2 container spacing={2}>
+      <Grid2 sx={{ width: '100%', marginBottom: '5vh' }}>
         <FormControlLabel
           control={
             <Switch
@@ -150,18 +150,18 @@ export default function ClientPage({
           }
           label="Moderator"
         />
-      </Grid>
-      <Grid item xs={12} sm={4} md={3} sx={{ width: '100%' }}>
+      </Grid2>
+      <Grid2 size={{ sm: 4, md: 3 }} sx={{ width: '100%' }}>
         <PlayerOverview
           ownState={ownState}
           remotePlayerStates={remotePlayerStates}
           revealed={tableState.revealed}
           tableState={tableState}
         />
-      </Grid>
-      <Grid item xs={12} sm={8} md={9}>
-        <Grid container>
-          <Grid item xs={12} lg={5} sx={{ marginBottom: '16px' }}>
+      </Grid2>
+      <Grid2 size={{ sm: 8, md: 9 }}>
+        <Grid2 container>
+          <Grid2 size={{ lg: 5 }} sx={{ marginBottom: '16px' }}>
             {tableState.values.map((value) => {
               const color = getValueColor(value, tableState.values);
               return (
@@ -229,17 +229,17 @@ export default function ClientPage({
                 </Button>
               </Stack>
             )}
-          </Grid>
-          <Grid item xs={12} lg={4}>
+          </Grid2>
+          <Grid2 size={{ lg: 4 }}>
             {tableState.revealed && (
               <Results
                 playerStates={mergedPlayerStates}
                 tableState={tableState}
               />
             )}
-          </Grid>
-        </Grid>
-      </Grid>
-    </Grid>
+          </Grid2>
+        </Grid2>
+      </Grid2>
+    </Grid2>
   );
 }
