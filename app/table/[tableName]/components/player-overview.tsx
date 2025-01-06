@@ -12,6 +12,7 @@ import WifiOffIcon from '@mui/icons-material/WifiOff';
 import BalanceIcon from '@mui/icons-material/Balance';
 import { TableState } from '@/lib/supabase/table-state';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
+import VisibilityTwoToneIcon from '@mui/icons-material/VisibilityTwoTone';
 
 interface UsernameInputProps {
   playerStates: PlayerState[];
@@ -41,49 +42,57 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
     >
       <Table size="small">
         <TableBody>
-          {playerStates.map((state) => {
-            const color =
-              getOfflineColor(state) ??
-              (revealed && state.selectedValue
-                ? getValueColor(state.selectedValue, tableState.values).regular
-                : undefined);
-            return (
-              <TableRow
-                key={state.clientId}
-                sx={{ color: getOfflineColor(state) }}
-              >
-                <TableCell sx={{ padding: '4px' }}>
-                  {state.isOffline && (
-                    <WifiOffIcon fontSize="small" sx={{ color: 'gray' }} />
-                  )}
-                </TableCell>
-                <TableCell sx={{ padding: '4px' }}>
-                  {state.isModerator && <BalanceIcon fontSize="small" />}
-                </TableCell>
-                <TableCell
-                  sx={{
-                    padding: '8px',
-                    color,
-                    fontWeight:
-                      revealed && state.selectedValue ? 'bold' : undefined,
-                  }}
+          {playerStates
+            .sort((a, b) =>
+              a.isObserver === b.isObserver ? 0 : a.isObserver ? 1 : -1,
+            )
+            .map((state) => {
+              const color =
+                getOfflineColor(state) ??
+                (revealed && state.selectedValue
+                  ? getValueColor(state.selectedValue, tableState.values)
+                      .regular
+                  : undefined);
+              return (
+                <TableRow
+                  key={state.clientId}
+                  sx={{ color: getOfflineColor(state) }}
                 >
-                  {state.username}
-                </TableCell>
-                <TableCell
-                  align={'right'}
-                  sx={{
-                    padding: '8px',
-                    fontWeight: 'bold',
-                    minWidth: '32px',
-                    color,
-                  }}
-                >
-                  {formatValue(state)}
-                </TableCell>
-              </TableRow>
-            );
-          })}
+                  <TableCell sx={{ padding: '4px' }}>
+                    {state.isOffline && (
+                      <WifiOffIcon fontSize="inherit" sx={{ color: 'gray' }} />
+                    )}
+                  </TableCell>
+                  <TableCell sx={{ padding: '4px' }}>
+                    {state.isModerator && <BalanceIcon fontSize="inherit" />}
+                    {state.isObserver && (
+                      <VisibilityTwoToneIcon fontSize="inherit" />
+                    )}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      padding: '8px',
+                      color,
+                      fontWeight:
+                        revealed && state.selectedValue ? 'bold' : undefined,
+                    }}
+                  >
+                    {state.username}
+                  </TableCell>
+                  <TableCell
+                    align={'right'}
+                    sx={{
+                      padding: '8px',
+                      fontWeight: 'bold',
+                      minWidth: '32px',
+                      color,
+                    }}
+                  >
+                    {formatValue(state)}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
         </TableBody>
       </Table>
     </TableContainer>

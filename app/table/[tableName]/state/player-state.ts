@@ -3,6 +3,7 @@ export interface PlayerState {
   username: string;
   selectedValue: string | null;
   isModerator: boolean;
+  isObserver: boolean;
   /**
    * Timestamp when the client last had any activity on the shared state.
    */

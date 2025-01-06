@@ -17,6 +17,7 @@ import { setTableRevealed } from '@/lib/supabase/set-table-revealed';
 import { getRandomImageIndex } from '@/app/table/[tableName]/components/images';
 import { useLocalStorage } from 'usehooks-ts';
 import BalanceIcon from '@mui/icons-material/Balance';
+import VisibilityTwoToneIcon from '@mui/icons-material/VisibilityTwoTone';
 
 interface ClientPageProps {
   tableName: string;
@@ -33,6 +34,10 @@ export default function ClientPage({
     `isModerator_${tableName}`,
     false,
   );
+  const [isObserver, setIsObserver] = useLocalStorage(
+    `isObserver_${tableName}`,
+    false,
+  );
   const [selectedValue, setSelectedValue] = useLocalStorage<string | null>(
     `${tableName}_selected`,
     null,
@@ -44,8 +49,9 @@ export default function ClientPage({
       username,
       selectedValue,
       isModerator,
+      isObserver,
     }),
-    [clientId, username, selectedValue, isModerator],
+    [clientId, username, selectedValue, isModerator, isObserver],
   );
 
   const [remotePlayerStates, setRemotePlayerStates] = useState<PlayerState[]>(
@@ -111,6 +117,7 @@ export default function ClientPage({
             username: state[0].username,
             selectedValue: state[0].selectedValue,
             isModerator: state[0].isModerator,
+            isObserver: state[0].isObserver,
           }))
           .filter((state) => state.clientId !== ownState.clientId);
 
@@ -137,6 +144,12 @@ export default function ClientPage({
     }
   }, [realtimeChannel, ownState]);
 
+  const canReveal =
+    mergedPlayerStates.some(({ selectedValue }) => selectedValue != null) &&
+    !tableState.revealed &&
+    (selectedValue !== null || isObserver) &&
+    isModerator;
+
   return (
     <Grid2 container spacing={2}>
       <Grid2 container sx={{ width: '100%', marginBottom: '5vh' }} spacing={2}>
@@ -161,8 +174,38 @@ export default function ClientPage({
                 flexWrap: 'wrap',
               }}
             >
-              <BalanceIcon fontSize="small" sx={{ marginRight: '2px' }} />
+              <BalanceIcon fontSize="inherit" sx={{ marginRight: '2px' }} />
               Moderator
+            </div>
+          }
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              size="small"
+              checked={isObserver}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                const newIsObserver = event.target.checked;
+                if (newIsObserver) {
+                  setSelectedValue(null);
+                }
+                setIsObserver(newIsObserver);
+              }}
+            />
+          }
+          label={
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+              }}
+            >
+              <VisibilityTwoToneIcon
+                fontSize="inherit"
+                sx={{ marginRight: '2px' }}
+              />
+              Observer
             </div>
           }
         />
@@ -181,7 +224,7 @@ export default function ClientPage({
               const color = getValueColor(value, tableState.values);
               return (
                 <Button
-                  disabled={tableState.revealed}
+                  disabled={tableState.revealed || isObserver}
                   key={value}
                   variant={selectedValue !== value ? 'outlined' : 'contained'}
                   value={value}
@@ -217,11 +260,7 @@ export default function ClientPage({
             {isModerator && (
               <Stack direction="row" spacing={4} sx={{ marginTop: '24px' }}>
                 <Button
-                  disabled={
-                    !isModerator ||
-                    tableState.revealed ||
-                    selectedValue === null
-                  }
+                  disabled={!canReveal}
                   variant={'contained'}
                   onClick={(): Promise<void> =>
                     setTableRevealed({
