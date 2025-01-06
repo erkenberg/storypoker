@@ -131,10 +131,6 @@ export default function ClientPage({
     }
   }, [realtimeChannel, ownState]);
 
-  // useEffect(() => {
-  //   setOwnState((oldState) => ({ ...oldState, username }));
-  // }, [username]);
-
   return (
     <Grid
       container
