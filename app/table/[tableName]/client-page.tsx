@@ -17,6 +17,7 @@ import { getValueColor } from '@/lib/value-helpers/value-colors';
 import { setTableRevealed } from '@/lib/supabase/set-table-revealed';
 import { getRandomImageIndex } from '@/app/table/[tableName]/components/images';
 import { useLocalStorage } from 'usehooks-ts';
+import BalanceIcon from '@mui/icons-material/Balance';
 
 interface ClientPageProps {
   tableName: string;
@@ -28,7 +29,7 @@ export default function ClientPage({
   initialTableState,
 }: ClientPageProps): JSX.Element {
   const clientId = useClientId();
-  const { username } = useUsername();
+  const { username, editUsername } = useUsername();
   const [isModerator, setIsModerator] = useLocalStorage(
     `isModerator_${tableName}`,
     false,
@@ -38,13 +39,14 @@ export default function ClientPage({
     null,
   );
 
-  const ownState = useMemo(
+  const ownState: PlayerState = useMemo(
     () => ({
       clientId,
       username,
       selectedValue,
+      isModerator,
     }),
-    [clientId, username, selectedValue],
+    [clientId, username, selectedValue, isModerator],
   );
 
   const [remotePlayerStates, setRemotePlayerStates] = useState<
@@ -109,6 +111,7 @@ export default function ClientPage({
             clientId: state[0].clientId,
             username: state[0].username,
             selectedValue: state[0].selectedValue,
+            isModerator: state[0].isModerator,
           }))
           .filter((state) => state.clientId !== ownState.clientId);
 
@@ -137,7 +140,10 @@ export default function ClientPage({
 
   return (
     <Grid2 container spacing={2}>
-      <Grid2 sx={{ width: '100%', marginBottom: '5vh' }}>
+      <Grid2 container sx={{ width: '100%', marginBottom: '5vh' }} spacing={2}>
+        <Button variant="text" size="small" onClick={() => editUsername()}>
+          Change name
+        </Button>
         <FormControlLabel
           control={
             <Switch
@@ -148,7 +154,18 @@ export default function ClientPage({
               }}
             />
           }
-          label="Moderator"
+          label={
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+              }}
+            >
+              <BalanceIcon fontSize="small" sx={{ marginRight: '2px' }} />
+              Moderator
+            </div>
+          }
         />
       </Grid2>
       <Grid2 size={{ sm: 4, md: 3 }} sx={{ width: '100%' }}>

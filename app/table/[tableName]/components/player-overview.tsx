@@ -10,11 +10,9 @@ import {
   Table,
   TableContainer,
   TableBody,
-  IconButton,
 } from '@mui/material';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
-import EditIcon from '@mui/icons-material/Edit';
-import { useUsername } from '@/lib/use-username';
+import BalanceIcon from '@mui/icons-material/Balance';
 import { TableState } from '@/lib/supabase/table-state';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 
@@ -31,7 +29,6 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
   revealed,
   tableState,
 }): JSX.Element => {
-  const { editUsername } = useUsername();
   const getOfflineColor = useCallback(
     (state: RemotePlayerState) => (state.isOffline ? 'gray' : undefined),
     [],
@@ -54,16 +51,9 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
       <Table size="small">
         <TableBody>
           <TableRow key={ownState.clientId}>
+            <TableCell sx={{ padding: '4px' }}></TableCell>
             <TableCell sx={{ padding: '4px' }}>
-              <IconButton
-                aria-label="edit username"
-                size="small"
-                color="primary"
-                sx={{ padding: '0' }}
-                onClick={(): void => editUsername()}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
+              {ownState.isModerator && <BalanceIcon fontSize="small" />}
             </TableCell>
             <TableCell
               sx={{
@@ -103,6 +93,9 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
                   {state.isOffline && (
                     <WifiOffIcon fontSize="small" sx={{ color: 'gray' }} />
                   )}
+                </TableCell>
+                <TableCell sx={{ padding: '4px' }}>
+                  {state.isModerator && <BalanceIcon fontSize="small" />}
                 </TableCell>
                 <TableCell
                   sx={{

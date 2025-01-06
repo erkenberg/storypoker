@@ -2,6 +2,7 @@ export interface PlayerState {
   clientId: string;
   username: string;
   selectedValue: string | null;
+  isModerator: boolean;
 }
 
 export interface RemotePlayerState extends PlayerState {
