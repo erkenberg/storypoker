@@ -1,8 +1,5 @@
 import React, { FC, JSX, useCallback } from 'react';
-import {
-  PlayerState,
-  RemotePlayerState,
-} from '@/app/table/[tableName]/state/player-state';
+import { PlayerState } from '@/app/table/[tableName]/state/player-state';
 import {
   Card,
   TableCell,
@@ -17,20 +14,18 @@ import { TableState } from '@/lib/supabase/table-state';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 
 interface UsernameInputProps {
-  ownState: PlayerState;
-  remotePlayerStates: RemotePlayerState[];
+  playerStates: PlayerState[];
   revealed: boolean;
   tableState: TableState;
 }
 
 export const PlayerOverview: FC<UsernameInputProps> = ({
-  ownState,
-  remotePlayerStates,
+  playerStates,
   revealed,
   tableState,
 }): JSX.Element => {
   const getOfflineColor = useCallback(
-    (state: RemotePlayerState) => (state.isOffline ? 'gray' : undefined),
+    (state: PlayerState) => (state.isOffline ? 'gray' : undefined),
     [],
   );
   const formatValue = useCallback(
@@ -39,10 +34,6 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
     [revealed],
   );
 
-  const ownColor =
-    revealed && ownState.selectedValue
-      ? getValueColor(ownState.selectedValue, tableState.values).regular
-      : undefined;
   return (
     <TableContainer
       component={Card}
@@ -50,35 +41,7 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
     >
       <Table size="small">
         <TableBody>
-          <TableRow key={ownState.clientId}>
-            <TableCell sx={{ padding: '4px' }}></TableCell>
-            <TableCell sx={{ padding: '4px' }}>
-              {ownState.isModerator && <BalanceIcon fontSize="small" />}
-            </TableCell>
-            <TableCell
-              sx={{
-                padding: '8px',
-                minWidth: '100px',
-                color: ownColor,
-                fontWeight:
-                  revealed && ownState.selectedValue ? 'bold' : undefined,
-              }}
-            >
-              {ownState.username}
-            </TableCell>
-            <TableCell
-              align="right"
-              sx={{
-                padding: '8px',
-                minWidth: '32px',
-                fontWeight: 'bold',
-                color: ownColor,
-              }}
-            >
-              {formatValue(ownState)}
-            </TableCell>
-          </TableRow>
-          {remotePlayerStates.map((state) => {
+          {playerStates.map((state) => {
             const color =
               getOfflineColor(state) ??
               (revealed && state.selectedValue
@@ -109,7 +72,12 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
                 </TableCell>
                 <TableCell
                   align={'right'}
-                  sx={{ padding: '8px', fontWeight: 'bold', color }}
+                  sx={{
+                    padding: '8px',
+                    fontWeight: 'bold',
+                    minWidth: '32px',
+                    color,
+                  }}
                 >
                   {formatValue(state)}
                 </TableCell>

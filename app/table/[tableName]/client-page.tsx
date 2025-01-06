@@ -2,9 +2,8 @@
 
 import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  mergeRemotePlayerState,
+  mergePlayerState,
   PlayerState,
-  RemotePlayerState,
 } from '@/app/table/[tableName]/state/player-state';
 import { TableState } from '@/lib/supabase/table-state';
 import { Button, FormControlLabel, Grid2, Stack, Switch } from '@mui/material';
@@ -49,9 +48,9 @@ export default function ClientPage({
     [clientId, username, selectedValue, isModerator],
   );
 
-  const [remotePlayerStates, setRemotePlayerStates] = useState<
-    RemotePlayerState[]
-  >([]);
+  const [remotePlayerStates, setRemotePlayerStates] = useState<PlayerState[]>(
+    [],
+  );
   const mergedPlayerStates = useMemo(
     () => [ownState, ...remotePlayerStates.filter((state) => !state.isOffline)],
     [ownState, remotePlayerStates],
@@ -116,7 +115,7 @@ export default function ClientPage({
           .filter((state) => state.clientId !== ownState.clientId);
 
         setRemotePlayerStates((oldRemoteStates) =>
-          mergeRemotePlayerState(oldRemoteStates, remoteStates),
+          mergePlayerState(oldRemoteStates, remoteStates),
         );
       })
       .subscribe();
@@ -170,8 +169,7 @@ export default function ClientPage({
       </Grid2>
       <Grid2 size={{ sm: 4, md: 3 }} sx={{ width: '100%' }}>
         <PlayerOverview
-          ownState={ownState}
-          remotePlayerStates={remotePlayerStates}
+          playerStates={mergedPlayerStates}
           revealed={tableState.revealed}
           tableState={tableState}
         />
