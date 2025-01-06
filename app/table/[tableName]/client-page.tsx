@@ -95,7 +95,7 @@ export default function ClientPage({
       )
       .subscribe();
 
-    return () => {
+    return (): void => {
       cleanupBackendChannel();
     };
   }, [backendChannel, cleanupBackendChannel, tableName, resetPlayerStates]);
@@ -117,7 +117,7 @@ export default function ClientPage({
         );
       })
       .subscribe();
-    return () => {
+    return (): void => {
       cleanupRealtimeChannel();
     };
   }, [

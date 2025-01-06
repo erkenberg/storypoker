@@ -24,6 +24,10 @@ export const useSupabaseChannel = (
     });
   }, [channelId, clientId]);
 
-  const cleanup = useMemo(() => () => client.removeChannel(channel), [channel]);
+  const cleanup = useMemo(
+    () => (): Promise<'ok' | 'timed out' | 'error'> =>
+      client.removeChannel(channel),
+    [channel],
+  );
   return [channel, cleanup];
 };
