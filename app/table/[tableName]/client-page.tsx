@@ -7,7 +7,7 @@ import {
   RemotePlayerState,
 } from '@/app/table/[tableName]/state/player-state';
 import { TableState } from '@/lib/supabase/table-state';
-import { Button, Grid, Stack } from '@mui/material';
+import { Button, FormControlLabel, Grid, Stack, Switch } from '@mui/material';
 import { useSupabaseChannel } from '@/lib/supabase/use-supabase-channel';
 import { PlayerOverview } from '@/app/table/[tableName]/components/player-overview';
 import { useClientId } from '@/lib/use-client-id';
@@ -29,6 +29,10 @@ export default function ClientPage({
 }: ClientPageProps): JSX.Element {
   const clientId = useClientId();
   const { username } = useUsername();
+  const [isModerator, setIsModerator] = useLocalStorage(
+    `isModerator_${tableName}`,
+    false,
+  );
   const [selectedValue, setSelectedValue] = useLocalStorage<string | null>(
     `${tableName}_selected`,
     null,
@@ -132,13 +136,21 @@ export default function ClientPage({
   }, [realtimeChannel, ownState]);
 
   return (
-    <Grid
-      container
-      spacing={2}
-      sx={{
-        marginTop: '10vh',
-      }}
-    >
+    <Grid container spacing={2}>
+      <Grid xs={12} item sx={{ width: '100%', marginBottom: '5vh' }}>
+        <FormControlLabel
+          control={
+            <Switch
+              size="small"
+              checked={isModerator}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                setIsModerator(event.target.checked);
+              }}
+            />
+          }
+          label="Moderator"
+        />
+      </Grid>
       <Grid item xs={12} sm={4} md={3} sx={{ width: '100%' }}>
         <PlayerOverview
           ownState={ownState}
@@ -187,30 +199,36 @@ export default function ClientPage({
                 </Button>
               );
             })}
-            <Stack direction="row" spacing={4} sx={{ marginTop: '24px' }}>
-              <Button
-                disabled={tableState.revealed || selectedValue === null}
-                variant={'contained'}
-                onClick={(): Promise<void> =>
-                  setTableRevealed({
-                    tableName,
-                    revealed: true,
-                    image_index: getRandomImageIndex(),
-                  })
-                }
-              >
-                Reveal
-              </Button>
-              <Button
-                variant={'contained'}
-                disabled={!tableState.revealed}
-                onClick={(): Promise<void> =>
-                  setTableRevealed({ tableName, revealed: false })
-                }
-              >
-                Reset
-              </Button>
-            </Stack>
+            {isModerator && (
+              <Stack direction="row" spacing={4} sx={{ marginTop: '24px' }}>
+                <Button
+                  disabled={
+                    !isModerator ||
+                    tableState.revealed ||
+                    selectedValue === null
+                  }
+                  variant={'contained'}
+                  onClick={(): Promise<void> =>
+                    setTableRevealed({
+                      tableName,
+                      revealed: true,
+                      image_index: getRandomImageIndex(),
+                    })
+                  }
+                >
+                  Show Results
+                </Button>
+                <Button
+                  variant={'contained'}
+                  disabled={!isModerator || !tableState.revealed}
+                  onClick={(): Promise<void> =>
+                    setTableRevealed({ tableName, revealed: false })
+                  }
+                >
+                  Reset
+                </Button>
+              </Stack>
+            )}
           </Grid>
           <Grid item xs={12} lg={4}>
             {tableState.revealed && (
