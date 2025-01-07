@@ -5,12 +5,27 @@ import {
   Grid2,
   IconButton,
   Switch,
+  tooltipClasses,
   Typography,
 } from '@mui/material';
 import BalanceIcon from '@mui/icons-material/Balance';
 import VisibilityTwoToneIcon from '@mui/icons-material/VisibilityTwoTone';
 import EditIcon from '@mui/icons-material/Edit';
 import { useUsername } from '@/lib/use-username';
+import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
+import { styled } from '@mui/system';
+
+const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    // @ts-expect-error shadows exists
+    boxShadow: theme.shadows[1],
+    fontSize: 11,
+  },
+}));
 
 interface SettingsProps {
   isModerator: boolean;
@@ -51,16 +66,18 @@ export const Settings: FC<SettingsProps> = ({
           />
         }
         label={
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-            }}
-          >
-            <BalanceIcon fontSize="inherit" sx={{ marginRight: '2px' }} />
-            Moderator
-          </div>
+          <LightTooltip title="Only moderators can reveal the results or reset the state.">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+              }}
+            >
+              <BalanceIcon fontSize="inherit" sx={{ marginRight: '2px' }} />
+              Moderator
+            </div>
+          </LightTooltip>
         }
       />
       <FormControlLabel
@@ -74,19 +91,21 @@ export const Settings: FC<SettingsProps> = ({
           />
         }
         label={
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-            }}
-          >
-            <VisibilityTwoToneIcon
-              fontSize="inherit"
-              sx={{ marginRight: '2px' }}
-            />
-            Observer
-          </div>
+          <LightTooltip title="Observers cannot vote, but can still see the results or be a moderator.">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+              }}
+            >
+              <VisibilityTwoToneIcon
+                fontSize="inherit"
+                sx={{ marginRight: '2px' }}
+              />
+              Observer
+            </div>
+          </LightTooltip>
         }
       />
       <FormControlLabel
