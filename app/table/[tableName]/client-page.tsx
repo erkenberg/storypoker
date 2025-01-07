@@ -6,7 +6,7 @@ import {
   PlayerState,
 } from '@/app/table/[tableName]/state/player-state';
 import { TableState } from '@/lib/supabase/table-state';
-import { Button, FormControlLabel, Grid2, Stack, Switch } from '@mui/material';
+import { Button, Grid2, Stack } from '@mui/material';
 import { useSupabaseChannel } from '@/lib/supabase/use-supabase-channel';
 import { PlayerOverview } from '@/app/table/[tableName]/components/player-overview';
 import { useClientId } from '@/lib/use-client-id';
@@ -16,8 +16,8 @@ import { getValueColor } from '@/lib/value-helpers/value-colors';
 import { setTableRevealed } from '@/lib/supabase/set-table-revealed';
 import { getRandomImageIndex } from '@/app/table/[tableName]/components/images';
 import { useLocalStorage } from 'usehooks-ts';
-import BalanceIcon from '@mui/icons-material/Balance';
-import VisibilityTwoToneIcon from '@mui/icons-material/VisibilityTwoTone';
+
+import { Settings } from '@/app/table/[tableName]/components/settings';
 
 interface ClientPageProps {
   tableName: string;
@@ -29,13 +29,13 @@ export default function ClientPage({
   initialTableState,
 }: ClientPageProps): JSX.Element {
   const clientId = useClientId();
-  const { username, editUsername } = useUsername();
+  const { username } = useUsername();
   const [isModerator, setIsModerator] = useLocalStorage(
-    `isModerator_${tableName}`,
+    `${tableName}_isModerator`,
     false,
   );
   const [isObserver, setIsObserver] = useLocalStorage(
-    `isObserver_${tableName}`,
+    `${tableName}_isObserver`,
     false,
   );
   const [selectedValue, setSelectedValue] = useLocalStorage<string | null>(
@@ -152,62 +152,21 @@ export default function ClientPage({
 
   return (
     <Grid2 container spacing={2}>
-      <Grid2 container sx={{ width: '100%', marginBottom: '5vh' }} spacing={2}>
-        <Button variant="text" size="small" onClick={() => editUsername()}>
-          Change name
-        </Button>
-        <FormControlLabel
-          control={
-            <Switch
-              size="small"
-              checked={isModerator}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setIsModerator(event.target.checked);
-              }}
-            />
-          }
-          label={
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-              }}
-            >
-              <BalanceIcon fontSize="inherit" sx={{ marginRight: '2px' }} />
-              Moderator
-            </div>
-          }
-        />
-        <FormControlLabel
-          control={
-            <Switch
-              size="small"
-              checked={isObserver}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const newIsObserver = event.target.checked;
-                if (newIsObserver) {
-                  setSelectedValue(null);
-                }
-                setIsObserver(newIsObserver);
-              }}
-            />
-          }
-          label={
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-              }}
-            >
-              <VisibilityTwoToneIcon
-                fontSize="inherit"
-                sx={{ marginRight: '2px' }}
-              />
-              Observer
-            </div>
-          }
+      <Grid2
+        container
+        sx={{ width: '100%', marginBottom: '3vh', marginTop: '8px' }}
+        spacing={2}
+      >
+        <Settings
+          isModerator={isModerator}
+          setIsModerator={setIsModerator}
+          isObserver={isObserver}
+          setIsObserver={(newIsObserver: boolean) => {
+            if (newIsObserver) {
+              setSelectedValue(null);
+            }
+            setIsObserver(newIsObserver);
+          }}
         />
       </Grid2>
       <Grid2 size={{ sm: 4, md: 3 }} sx={{ width: '100%' }}>

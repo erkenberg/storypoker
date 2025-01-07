@@ -38,7 +38,8 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
   return (
     <TableContainer
       component={Card}
-      sx={{ width: 'fit-content', margin: 'auto' }}
+      variant="outlined"
+      sx={{ width: 'fit-content', margin: { xs: 'auto', sm: 'unset' } }}
     >
       <Table size="small">
         <TableBody>
