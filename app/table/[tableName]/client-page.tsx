@@ -152,11 +152,7 @@ export default function ClientPage({
 
   return (
     <Grid2 container spacing={2}>
-      <Grid2
-        container
-        sx={{ width: '100%', marginBottom: '3vh', marginTop: '8px' }}
-        spacing={2}
-      >
+      <Grid2 container sx={{ width: '100%', marginTop: '2vh' }} spacing={2}>
         <Settings
           isModerator={isModerator}
           setIsModerator={setIsModerator}
