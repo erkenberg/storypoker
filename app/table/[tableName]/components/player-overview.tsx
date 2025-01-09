@@ -1,12 +1,13 @@
 import React, { FC, JSX, useCallback } from 'react';
 import { PlayerState } from '@/app/table/[tableName]/state/player-state';
 import {
-  Card,
   TableCell,
   TableRow,
   Table,
   TableContainer,
   TableBody,
+  TableHead,
+  Paper,
 } from '@mui/material';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
 import BalanceIcon from '@mui/icons-material/Balance';
@@ -34,14 +35,37 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
       revealed ? state.selectedValue : state.selectedValue != null ? '✓' : '',
     [revealed],
   );
+  const players = playerStates.length;
+  const activeUsers = playerStates.filter(
+    ({ isObserver }) => !isObserver,
+  ).length;
+  const playersWithSelection = playerStates.filter(
+    ({ selectedValue }) => selectedValue !== null,
+  ).length;
 
   return (
     <TableContainer
-      component={Card}
+      component={Paper}
       variant="outlined"
       sx={{ width: 'fit-content', margin: { xs: 'auto', sm: 'unset' } }}
     >
       <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ padding: '4px' }}></TableCell>
+            <TableCell sx={{ padding: '4px' }}></TableCell>
+            <TableCell sx={{ padding: '4px', fontWeight: 'bold' }}>
+              Player{players !== 1 ? 's' : ''} ({players})
+            </TableCell>
+            <TableCell
+              align={'center'}
+              sx={{ padding: '4px', fontWeight: 'bold' }}
+            >
+              Vote{activeUsers !== 1 ? 's' : ''} ({playersWithSelection}/
+              {activeUsers})
+            </TableCell>
+          </TableRow>
+        </TableHead>
         <TableBody>
           {playerStates
             .sort((a, b) =>
@@ -66,13 +90,10 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
                   </TableCell>
                   <TableCell sx={{ padding: '4px' }}>
                     {state.isModerator && <BalanceIcon fontSize="inherit" />}
-                    {state.isObserver && (
-                      <VisibilityTwoToneIcon fontSize="inherit" />
-                    )}
                   </TableCell>
                   <TableCell
                     sx={{
-                      padding: '8px',
+                      padding: '4px',
                       color,
                       fontWeight:
                         revealed && state.selectedValue ? 'bold' : undefined,
@@ -81,14 +102,17 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
                     {state.username}
                   </TableCell>
                   <TableCell
-                    align={'right'}
+                    align={'center'}
                     sx={{
-                      padding: '8px',
+                      padding: '4px',
                       fontWeight: 'bold',
                       minWidth: '32px',
                       color,
                     }}
                   >
+                    {state.isObserver && (
+                      <VisibilityTwoToneIcon fontSize="inherit" />
+                    )}
                     {formatValue(state)}
                   </TableCell>
                 </TableRow>
