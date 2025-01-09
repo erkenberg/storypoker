@@ -144,6 +144,11 @@ export default function ClientPage({
     }
   }, [realtimeChannel, ownState]);
 
+  // Small validation attempt, resetting the selected value when tampering with it in the local storage
+  if (selectedValue && !tableState.values.includes(selectedValue)) {
+    setSelectedValue(null);
+  }
+
   const canReveal =
     mergedPlayerStates.some(({ selectedValue }) => selectedValue != null) &&
     !tableState.revealed &&
