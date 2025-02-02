@@ -112,13 +112,7 @@ export default function ClientPage({
       .on('presence', { event: 'sync' }, () => {
         const realTimeState = realtimeChannel.presenceState<PlayerState>();
         const remoteStates = Object.values(realTimeState)
-          .map((state) => ({
-            clientId: state[0].clientId,
-            username: state[0].username,
-            selectedValue: state[0].selectedValue,
-            isModerator: state[0].isModerator,
-            isObserver: state[0].isObserver,
-          }))
+          .map((state) => state[0])
           .filter((state) => state.clientId !== ownState.clientId);
 
         setRemotePlayerStates((oldRemoteStates) =>
@@ -139,7 +133,7 @@ export default function ClientPage({
   useEffect(() => {
     if (ownState.username.length > 0) {
       realtimeChannel
-        .track(ownState)
+        .track({ ...ownState, timestamp: Date.now() })
         .catch(() => console.error('Error sending local state'));
     }
   }, [realtimeChannel, ownState]);
