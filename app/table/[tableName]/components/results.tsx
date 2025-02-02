@@ -17,7 +17,7 @@ export const Results: FC<ResultsProps> = ({
   tableState,
 }): JSX.Element => {
   const validPlayerStates = playerStates.filter(
-    (state) => state.selectedValue != null,
+    ({ selectedValue, isOffline }) => selectedValue != null && !isOffline,
   );
   const usedValues = tableState.values.filter((value) =>
     validPlayerStates.some((state) => state.selectedValue === value),

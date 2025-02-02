@@ -58,7 +58,7 @@ export default function ClientPage({
     [],
   );
   const mergedPlayerStates = useMemo(
-    () => [ownState, ...remotePlayerStates.filter((state) => !state.isOffline)],
+    () => [ownState, ...remotePlayerStates],
     [ownState, remotePlayerStates],
   );
   const [tableState, setTableState] = useState<TableState>(initialTableState);
