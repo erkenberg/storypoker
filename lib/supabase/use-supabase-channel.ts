@@ -7,6 +7,7 @@ const client = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
   {
     realtime: {
+      worker: true,
       params: {
         eventsPerSecond: 10,
       },
