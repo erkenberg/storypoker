@@ -6,7 +6,7 @@ import {
   Button,
   CircularProgress,
   FormLabel,
-  Grid2,
+  Grid,
   Stack,
   TextField,
   Typography,
@@ -75,7 +75,7 @@ const Page = (): JSX.Element => {
     }
   };
   return (
-    <Grid2
+    <Grid
       container
       spacing={0}
       direction="column"
@@ -137,7 +137,7 @@ const Page = (): JSX.Element => {
           </Stack>
         )}
       </form>
-    </Grid2>
+    </Grid>
   );
 };
 export default Page;

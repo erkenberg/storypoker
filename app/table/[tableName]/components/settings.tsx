@@ -2,7 +2,7 @@ import React, { FC, JSX } from 'react';
 import {
   Card,
   FormControlLabel,
-  Grid2,
+  Grid,
   IconButton,
   Switch,
   tooltipClasses,
@@ -43,7 +43,7 @@ export const Settings: FC<SettingsProps> = ({
   const { editUsername } = useUsername();
 
   return (
-    <Grid2
+    <Grid
       container
       component={Card}
       variant="outlined"
@@ -132,6 +132,6 @@ export const Settings: FC<SettingsProps> = ({
           </div>
         }
       />
-    </Grid2>
+    </Grid>
   );
 };
