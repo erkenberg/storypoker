@@ -12,7 +12,8 @@ interface PageProps {
 }
 
 const Page = async ({ params }: PageProps): Promise<JSX.Element> => {
-  const { tableName } = await params;
+  const encodedTableName = (await params).tableName;
+  const tableName = decodeURIComponent(encodedTableName);
 
   const tableState = await getTableState(tableName);
   if (!tableState) {

@@ -66,7 +66,7 @@ const Page = (): JSX.Element => {
     setPendingCreateTable(true);
     const result = await createTable({ tableName, values: valueArray });
     if (result.ok) {
-      router.push(`/table/${result.tableName}`);
+      router.push(`/table/${encodeURIComponent(result.tableName)}`);
     } else {
       setPendingCreateTable(false);
       setCreationError(
