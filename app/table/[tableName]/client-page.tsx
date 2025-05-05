@@ -6,7 +6,7 @@ import {
   PlayerState,
 } from '@/app/table/[tableName]/state/player-state';
 import { TableState } from '@/lib/supabase/table-state';
-import { Button, Grid, Stack } from '@mui/material';
+import { Button, Grid, Stack, Typography } from '@mui/material';
 import { useSupabaseChannel } from '@/lib/supabase/use-supabase-channel';
 import { PlayerOverview } from '@/app/table/[tableName]/components/player-overview';
 import { useClientId } from '@/lib/use-client-id';
@@ -150,8 +150,13 @@ export default function ClientPage({
     isModerator;
 
   return (
-    <Grid container spacing={2}>
-      <Grid container sx={{ width: '100%', marginTop: '2vh' }} spacing={2}>
+    <Grid container spacing={1.5}>
+      <Grid container sx={{ width: '100%', marginTop: '12px' }} spacing={2}>
+        <Typography component={'h1'} sx={{ fontWeight: 'bold' }}>
+          {tableName}
+        </Typography>
+      </Grid>
+      <Grid container sx={{ width: '100%' }} spacing={2}>
         <Settings
           isModerator={isModerator}
           setIsModerator={setIsModerator}
