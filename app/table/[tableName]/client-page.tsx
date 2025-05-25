@@ -18,6 +18,8 @@ import { getRandomImageIndex } from '@/app/table/[tableName]/components/images';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { Settings } from '@/app/table/[tableName]/components/settings';
+import { useIsModerator } from '@/lib/hooks/use-is-moderator';
+import { useIsObserver } from '@/lib/hooks/use-is-observer';
 
 interface ClientPageProps {
   tableName: string;
@@ -30,14 +32,8 @@ export default function ClientPage({
 }: ClientPageProps): JSX.Element {
   const clientId = useClientId();
   const { username } = useUsername();
-  const [isModerator, setIsModerator] = useLocalStorage(
-    `${tableName}_isModerator`,
-    false,
-  );
-  const [isObserver, setIsObserver] = useLocalStorage(
-    `${tableName}_isObserver`,
-    false,
-  );
+  const { isModerator } = useIsModerator(tableName);
+  const { isObserver } = useIsObserver(tableName);
   const [selectedValue, setSelectedValue] = useLocalStorage<string | null>(
     `${tableName}_selected`,
     null,
@@ -77,6 +73,11 @@ export default function ClientPage({
       ),
     );
   }, [setRemotePlayerStates, setSelectedValue]);
+
+  useEffect(() => {
+    // Reset the selected value when becoming an observer
+    if (isObserver) setSelectedValue(null);
+  }, [isObserver, setSelectedValue]);
 
   useEffect(() => {
     backendChannel
@@ -157,17 +158,7 @@ export default function ClientPage({
         </Typography>
       </Grid>
       <Grid container sx={{ width: '100%' }} spacing={2}>
-        <Settings
-          isModerator={isModerator}
-          setIsModerator={setIsModerator}
-          isObserver={isObserver}
-          setIsObserver={(newIsObserver: boolean) => {
-            if (newIsObserver) {
-              setSelectedValue(null);
-            }
-            setIsObserver(newIsObserver);
-          }}
-        />
+        <Settings tableName={tableName} />
       </Grid>
       <Grid size={{ sm: 4, md: 3 }} sx={{ width: '100%' }}>
         <PlayerOverview

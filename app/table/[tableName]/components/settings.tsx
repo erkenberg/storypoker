@@ -14,6 +14,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useUsername } from '@/lib/use-username';
 import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
 import { styled } from '@mui/system';
+import { useIsModerator } from '@/lib/hooks/use-is-moderator';
+import { useIsObserver } from '@/lib/hooks/use-is-observer';
 
 const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -28,20 +30,13 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
 }));
 
 interface SettingsProps {
-  isModerator: boolean;
-  setIsModerator: (isModerator: boolean) => void;
-  isObserver: boolean;
-  setIsObserver: (isObserver: boolean) => void;
+  tableName: string;
 }
 
-export const Settings: FC<SettingsProps> = ({
-  isModerator,
-  setIsModerator,
-  isObserver,
-  setIsObserver,
-}): JSX.Element => {
+export const Settings: FC<SettingsProps> = ({ tableName }): JSX.Element => {
   const { editUsername } = useUsername();
-
+  const { isModerator, setIsModerator } = useIsModerator(tableName);
+  const { isObserver, setIsObserver } = useIsObserver(tableName);
   return (
     <Grid
       container
