@@ -61,8 +61,7 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
               align={'center'}
               sx={{ padding: '4px', fontWeight: 'bold' }}
             >
-              Votes ({playersWithSelection}/
-              {activeUsers})
+              Votes ({playersWithSelection}/{activeUsers})
             </TableCell>
           </TableRow>
         </TableHead>
