@@ -1,5 +1,4 @@
 import React, { JSX } from 'react';
-import UsernameWrapper from '@/app/table/[tableName]/components/username-wrapper';
 import { getTableState } from '@/lib/supabase/table-state';
 import { redirect } from 'next/navigation';
 import ClientPage from '@/app/table/[tableName]/client-page';
@@ -21,10 +20,6 @@ const Page = async ({ params }: PageProps): Promise<JSX.Element> => {
     redirect('/?tableName=' + tableName);
   }
 
-  return (
-    <UsernameWrapper>
-      <ClientPage tableName={tableName} initialTableState={tableState} />
-    </UsernameWrapper>
-  );
+  return <ClientPage tableName={tableName} initialTableState={tableState} />;
 };
 export default Page;

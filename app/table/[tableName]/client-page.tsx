@@ -10,7 +10,7 @@ import { Button, Grid, Stack, Typography } from '@mui/material';
 import { useSupabaseChannel } from '@/lib/supabase/use-supabase-channel';
 import { PlayerOverview } from '@/app/table/[tableName]/components/player-overview';
 import { useClientId } from '@/lib/use-client-id';
-import { useUsername } from '@/lib/use-username';
+import { useUsername } from '@/lib/hooks/use-username';
 import { Results } from '@/app/table/[tableName]/components/results';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 import { setTableRevealed } from '@/lib/supabase/set-table-revealed';
@@ -152,12 +152,13 @@ export default function ClientPage({
 
   return (
     <Grid container spacing={1.5}>
-      <Grid container sx={{ width: '100%', marginTop: '12px' }} spacing={2}>
-        <Typography component={'h1'} sx={{ fontWeight: 'bold' }}>
+      <Grid container sx={{ width: '100%', marginTop: '12px' }} spacing={0}>
+        <Typography
+          component={'h1'}
+          sx={{ fontWeight: 'bold', marginTop: 'auto', marginBottom: 'auto' }}
+        >
           {tableName}
         </Typography>
-      </Grid>
-      <Grid container sx={{ width: '100%' }} spacing={2}>
         <Settings tableName={tableName} />
       </Grid>
       <Grid size={{ sm: 4, md: 3 }} sx={{ width: '100%' }}>
