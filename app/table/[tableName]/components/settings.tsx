@@ -4,6 +4,7 @@ import {
   FormHelperText,
   IconButton,
   Switch,
+  Typography,
 } from '@mui/material';
 import BalanceIcon from '@mui/icons-material/Balance';
 import VisibilityTwoToneIcon from '@mui/icons-material/VisibilityTwoTone';
@@ -43,6 +44,9 @@ export const Settings: FC<SettingsProps> = ({ tableName }): JSX.Element => {
     <>
       <IconButton onClick={openDialog} color="primary">
         <SettingsIcon fontSize="small" />
+        <Typography component={'h2'} sx={{ marginLeft: 1 }}>
+          Settings
+        </Typography>
       </IconButton>
       <Dialog
         open={open}
