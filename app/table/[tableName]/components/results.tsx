@@ -16,10 +16,11 @@ export const Results: FC<ResultsProps> = ({
   playerStates,
   tableState,
 }): JSX.Element => {
+  const values = tableState.values.values;
   const validPlayerStates = playerStates.filter(
     ({ selectedValue, isOffline }) => selectedValue != null && !isOffline,
   );
-  const usedValues = tableState.values.filter((value) =>
+  const usedValues = values.filter((value) =>
     validPlayerStates.some((state) => state.selectedValue === value),
   );
   const allValuesIdentical = usedValues.every(
@@ -43,8 +44,7 @@ export const Results: FC<ResultsProps> = ({
                 variant="h6"
                 sx={{
                   color:
-                    commonValue &&
-                    getValueColor(commonValue, tableState.values).regular,
+                    commonValue && getValueColor(commonValue, values).regular,
                   fontWeight: 'bold',
                   display: 'inline',
                 }}
@@ -65,7 +65,7 @@ export const Results: FC<ResultsProps> = ({
               return {
                 value,
                 count,
-                color: getValueColor(value, tableState.values),
+                color: getValueColor(value, values),
               };
             })}
           />

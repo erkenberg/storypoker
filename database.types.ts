@@ -17,7 +17,7 @@ export type Database = {
           name: string
           revealed: boolean
           updated: string
-          values: string[]
+          values: string[] | null
         }
         Insert: {
           created?: string
@@ -26,7 +26,7 @@ export type Database = {
           name: string
           revealed?: boolean
           updated?: string
-          values: string[]
+          values?: string[] | null
         }
         Update: {
           created?: string
@@ -35,7 +35,7 @@ export type Database = {
           name?: string
           revealed?: boolean
           updated?: string
-          values?: string[]
+          values?: string[] | null
         }
         Relationships: []
       }

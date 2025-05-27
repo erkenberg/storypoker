@@ -14,25 +14,26 @@ import {
 import { createTable } from '@/lib/supabase/create-table';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { filter, uniq, includes } from 'lodash';
-
-const defaultValueOptions: string[][] = [
-  ['1', '2', '3', '5', '8', '13', '21', '?', '☕'],
-  ['😁', '😏', '😃', '😒', '😓', '😡', '?', '☕'],
-];
+import { defaultValueOptions } from '@/lib/value-helpers/predefined-values';
 
 const Page = (): JSX.Element => {
   const searchParams = useSearchParams();
   const [tableName, setTableName] = useState<string>(
     searchParams.get('tableName') ?? '',
   );
-  const [values, setValues] = useState<string>(
-    defaultValueOptions[0].join(', '),
-  );
+
   const [pendingCreateTable, setPendingCreateTable] = useState(false);
   const [tableNameError, setTableNameError] = useState<string | null>(null);
   const [valuesError, setValuesError] = useState<string | null>(null);
   const [creationError, setCreationError] = useState<string | null>(null);
   const router = useRouter();
+
+  const options = defaultValueOptions.map((values) => ({
+    label: `${values.description}: ${values.values.join(', ')}`,
+    value: values,
+  }));
+
+  const [selectedOption, setSelectedOption] = useState(options[0]);
 
   const onSubmit = async (): Promise<void> => {
     setCreationError(null);
@@ -44,7 +45,7 @@ const Page = (): JSX.Element => {
       setTableNameError('Table name must have at least two characters!');
       hasError = true;
     }
-    const valueArray = values.split(',').map((value) => value.trim());
+    const valueArray = selectedOption.value.values.map((value) => value.trim());
 
     if (!valueArray || valueArray.length < 2) {
       setValuesError("Please enter at least two ',' separated values!");
@@ -64,7 +65,10 @@ const Page = (): JSX.Element => {
     if (hasError) return;
 
     setPendingCreateTable(true);
-    const result = await createTable({ tableName, values: valueArray });
+    const result = await createTable({
+      tableName,
+      values: selectedOption.value,
+    });
     if (result.ok) {
       router.push(`/table/${encodeURIComponent(result.tableName)}`);
     } else {
@@ -103,12 +107,12 @@ const Page = (): JSX.Element => {
             />
             <Autocomplete
               id="table-values"
-              freeSolo
-              options={defaultValueOptions.map((option) => option.join(', '))}
-              defaultValue={defaultValueOptions[0].join(', ')}
-              inputValue={values}
-              onInputChange={(event, newValue): void => {
-                setValues(newValue ?? '');
+              options={options}
+              defaultValue={options[0]}
+              value={selectedOption}
+              disableClearable
+              onChange={(_, option): void => {
+                setSelectedOption(option);
               }}
               forcePopupIcon
               // @ts-expect-error key actually does exist on params

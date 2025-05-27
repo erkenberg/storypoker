@@ -20,6 +20,8 @@ import { useLocalStorage } from 'usehooks-ts';
 import { Settings } from '@/app/table/[tableName]/components/settings';
 import { useIsModerator } from '@/lib/hooks/use-is-moderator';
 import { useIsObserver } from '@/lib/hooks/use-is-observer';
+import { Tables } from '@/database.types';
+import { Values } from '@/lib/supabase/types';
 
 interface ClientPageProps {
   tableName: string;
@@ -89,16 +91,42 @@ export default function ClientPage({
           table: 'tables',
           filter: `name=eq.${tableName}`,
         },
-        ({ new: newState }: { new: TableState }) => {
+        ({ new: table }: { new: Tables<'tables'> }) => {
           setTableState((old) => {
             // NOTE: somehow tableState.revealed is always false in the subscription callback, therefore
             // we check this in the setTableState callback where the oldValue is correct.
-            if (old.revealed && !newState.revealed) {
+            if (old.revealed && !table.revealed) {
               resetPlayerStates();
             }
-            return newState;
+            return {
+              ...old,
+              revealed: table.revealed,
+              name: table.name,
+              image_index: table.image_index,
+            } satisfies TableState;
           });
-          //TODO: handle updating ownState if selected value doesn't exist anymore
+        },
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'values',
+          filter: `table_name=eq.${tableName}`,
+        },
+        ({ new: values }: { new: Values }) => {
+          console.log('test', values);
+          setTableState((old) => {
+            return {
+              ...old,
+              values: values.active ? values : old.values,
+              valueSets: [
+                ...old.valueSets.filter(({ id }) => id !== values.id),
+                values,
+              ],
+            } satisfies TableState;
+          });
         },
       )
       .subscribe();
@@ -140,7 +168,7 @@ export default function ClientPage({
   }, [realtimeChannel, ownState]);
 
   // Small validation attempt, resetting the selected value when tampering with it in the local storage
-  if (selectedValue && !tableState.values.includes(selectedValue)) {
+  if (selectedValue && !tableState.values.values.includes(selectedValue)) {
     setSelectedValue(null);
   }
 
@@ -168,15 +196,14 @@ export default function ClientPage({
       <Grid size={{ sm: 4, md: 3 }} sx={{ width: '100%' }}>
         <PlayerOverview
           playerStates={mergedPlayerStates}
-          revealed={tableState.revealed}
           tableState={tableState}
         />
       </Grid>
       <Grid size={{ sm: 8, md: 9 }}>
         <Grid container>
           <Grid size={{ lg: 5 }} sx={{ marginBottom: '16px' }}>
-            {tableState.values.map((value) => {
-              const color = getValueColor(value, tableState.values);
+            {tableState.values.values.map((value) => {
+              const color = getValueColor(value, tableState.values.values);
               return (
                 <Button
                   disabled={tableState.revealed || isObserver}
@@ -219,7 +246,7 @@ export default function ClientPage({
                   variant={'contained'}
                   onClick={(): Promise<void> =>
                     setTableRevealed({
-                      tableName,
+                      name: tableName,
                       revealed: true,
                       image_index: getRandomImageIndex(),
                     })
@@ -231,7 +258,7 @@ export default function ClientPage({
                   variant={'contained'}
                   disabled={!isModerator || !tableState.revealed}
                   onClick={(): Promise<void> =>
-                    setTableRevealed({ tableName, revealed: false })
+                    setTableRevealed({ name: tableName, revealed: false })
                   }
                 >
                   Reset
