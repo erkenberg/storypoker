@@ -35,6 +35,10 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Types
+
+See https://supabase.com/docs/guides/api/rest/generating-types for how to generating/updating the TypeScript types from the Supabase db schema
+
 ## Special Thanks
 
 A big thank you to [DanielSWolf](https://github.com/DanielSWolf) for their fantastic contribution of the cat and dog poker images – they're absolutely amazing! Much appreciated!
