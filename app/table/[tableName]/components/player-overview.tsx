@@ -17,15 +17,14 @@ import VisibilityTwoToneIcon from '@mui/icons-material/VisibilityTwoTone';
 
 interface UsernameInputProps {
   playerStates: PlayerState[];
-  revealed: boolean;
   tableState: TableState;
 }
 
 export const PlayerOverview: FC<UsernameInputProps> = ({
   playerStates,
-  revealed,
   tableState,
 }): JSX.Element => {
+  const { revealed, values } = tableState;
   const getOfflineColor = useCallback(
     (state: PlayerState) => (state.isOffline ? 'gray' : undefined),
     [],
@@ -74,8 +73,7 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
               const color =
                 getOfflineColor(state) ??
                 (revealed && state.selectedValue
-                  ? getValueColor(state.selectedValue, tableState.values)
-                      .regular
+                  ? getValueColor(state.selectedValue, values.values).regular
                   : undefined);
               return (
                 <TableRow

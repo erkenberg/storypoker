@@ -63,7 +63,7 @@ export const Statistics: FC<StatisticsProps> = ({
   if (numbers.length <= 0) return <></>;
 
   const getSx = (value: string): SxProps => ({
-    color: getValueColor(value, tableState.values).regular,
+    color: getValueColor(value, tableState.values.values).regular,
     fontWeight: 'bold',
   });
 
