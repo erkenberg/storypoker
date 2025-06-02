@@ -17,7 +17,7 @@ import { setTableRevealed } from '@/lib/supabase/set-table-revealed';
 import { getRandomImageIndex } from '@/app/table/[tableName]/components/images';
 import { useLocalStorage } from 'usehooks-ts';
 
-import { Settings } from '@/app/table/[tableName]/components/settings';
+import { Settings } from './components/settings/settings';
 import { useIsModerator } from '@/lib/hooks/use-is-moderator';
 import { useIsObserver } from '@/lib/hooks/use-is-observer';
 import { Tables } from '@/database.types';
@@ -116,7 +116,6 @@ export default function ClientPage({
           filter: `table_name=eq.${tableName}`,
         },
         ({ new: values }: { new: Values }) => {
-          console.log('test', values);
           setTableState((old) => {
             return {
               ...old,
@@ -180,18 +179,14 @@ export default function ClientPage({
 
   return (
     <Grid container spacing={1.5}>
-      <Grid
-        container
-        sx={{ width: '100%', marginTop: '12px' }}
-        justifyContent="space-between"
-      >
+      <Grid container sx={{ width: '100%', marginTop: '12px' }} spacing={0}>
         <Typography
           component={'h1'}
           sx={{ fontWeight: 'bold', marginTop: 'auto', marginBottom: 'auto' }}
         >
           {tableName}
         </Typography>
-        <Settings tableName={tableName} />
+        <Settings tableName={tableName} valueSets={tableState.valueSets} />
       </Grid>
       <Grid size={{ sm: 4, md: 3 }} sx={{ width: '100%' }}>
         <PlayerOverview

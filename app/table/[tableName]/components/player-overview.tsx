@@ -14,6 +14,8 @@ import BalanceIcon from '@mui/icons-material/Balance';
 import { TableState } from '@/lib/supabase/table-state';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 import VisibilityTwoToneIcon from '@mui/icons-material/VisibilityTwoTone';
+import { useClientId } from '@/lib/use-client-id';
+import { UsernameDialog } from '@/app/table/[tableName]/components/settings/username-dialog';
 
 interface UsernameInputProps {
   playerStates: PlayerState[];
@@ -24,6 +26,7 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
   playerStates,
   tableState,
 }): JSX.Element => {
+  const clientId = useClientId();
   const { revealed, values } = tableState;
   const getOfflineColor = useCallback(
     (state: PlayerState) => (state.isOffline ? 'gray' : undefined),
@@ -96,7 +99,11 @@ export const PlayerOverview: FC<UsernameInputProps> = ({
                         revealed && state.selectedValue ? 'bold' : undefined,
                     }}
                   >
-                    {state.username}
+                    {clientId === state.clientId ? (
+                      <UsernameDialog />
+                    ) : (
+                      state.username
+                    )}
                   </TableCell>
                   <TableCell
                     align={'center'}
