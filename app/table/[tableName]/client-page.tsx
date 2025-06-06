@@ -26,7 +26,7 @@ import {
   RealtimePostgresDeletePayload,
 } from '@supabase/realtime-js';
 import { RealtimePostgresUpdatePayload } from '@supabase/realtime-js/src/RealtimeChannel';
-import { defaultValueOptions } from '@/lib/value-helpers/predefined-values';
+import { getActiveValues } from '@/lib/value-helpers/get-active-values';
 
 interface ClientPageProps {
   tableName: string;
@@ -148,21 +148,18 @@ export default function ClientPage({
           table: 'values',
         },
         ({ old: { id } }: RealtimePostgresDeletePayload<Tables<'values'>>) => {
-          setTableState((old) => {
-            const valueSets = old.valueSets.filter(
-              (values) => values.id !== id,
-            );
-            return valueSets.length !== old.valueSets.length
-              ? ({
-                  ...old,
-                  values:
-                    valueSets.find((values) => values.active) ??
-                    valueSets.at(0) ??
-                    defaultValueOptions[0],
-                  valueSets,
-                } satisfies TableState)
-              : old;
-          });
+          const valueSets = tableState.valueSets.filter(
+            (values) => values.id !== id,
+          );
+          if (valueSets.length !== tableState.valueSets.length) {
+            setTableState((old) => {
+              return {
+                ...old,
+                values: getActiveValues(valueSets),
+                valueSets,
+              } satisfies TableState;
+            });
+          }
         },
       )
       .subscribe();

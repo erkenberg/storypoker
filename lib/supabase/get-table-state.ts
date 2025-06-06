@@ -2,7 +2,7 @@
 
 import { createServerClient } from '@/lib/supabase/create-server-client';
 import { Table, Values } from '@/lib/supabase/types';
-import { defaultValueOptions } from '@/lib/value-helpers/predefined-values';
+import { getActiveValues } from '@/lib/value-helpers/get-active-values';
 
 export interface TableState extends Table {
   /* Currently active values. */
@@ -47,12 +47,7 @@ export async function getTableState(
     revealed,
     name,
     image_index,
-
-    values:
-      values.find(({ active }) => active) ??
-      values.at(0) ??
-      // NOTE: currently falling back to a default value when no entries are set without id/active
-      defaultValueOptions[0],
+    values: getActiveValues(values),
     valueSets: values,
   };
 }
