@@ -10,7 +10,7 @@ import {
   TableHead,
   SxProps,
 } from '@mui/material';
-import { TableState } from '@/lib/supabase/table-state';
+import { TableState } from '@/lib/supabase/get-table-state';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 
 interface StatisticsProps {

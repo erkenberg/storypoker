@@ -2,7 +2,7 @@ import React, { FC, JSX } from 'react';
 import { Typography } from '@mui/material';
 import { Chart } from '@/app/table/[tableName]/components/chart';
 import { Statistics } from '@/app/table/[tableName]/components/statistics';
-import { TableState } from '@/lib/supabase/table-state';
+import { TableState } from '@/lib/supabase/get-table-state';
 import { PlayerState } from '@/app/table/[tableName]/state/player-state';
 import { Images } from '@/app/table/[tableName]/components/images';
 import { getValueColor } from '@/lib/value-helpers/value-colors';

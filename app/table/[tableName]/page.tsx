@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { getTableState } from '@/lib/supabase/table-state';
+import { getTableState } from '@/lib/supabase/get-table-state';
 import { redirect } from 'next/navigation';
 import ClientPage from '@/app/table/[tableName]/client-page';
 

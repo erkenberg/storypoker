@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
 import BalanceIcon from '@mui/icons-material/Balance';
-import { TableState } from '@/lib/supabase/table-state';
+import { TableState } from '@/lib/supabase/get-table-state';
 import { getValueColor } from '@/lib/value-helpers/value-colors';
 import VisibilityTwoToneIcon from '@mui/icons-material/VisibilityTwoTone';
 import { useClientId } from '@/lib/use-client-id';

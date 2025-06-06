@@ -5,7 +5,7 @@ import {
   mergePlayerState,
   PlayerState,
 } from '@/app/table/[tableName]/state/player-state';
-import { TableState } from '@/lib/supabase/table-state';
+import { TableState } from '@/lib/supabase/get-table-state';
 import { Button, Grid, Stack, Typography } from '@mui/material';
 import { useSupabaseChannel } from '@/lib/supabase/use-supabase-channel';
 import { PlayerOverview } from '@/app/table/[tableName]/components/player-overview';
