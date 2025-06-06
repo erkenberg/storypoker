@@ -6,7 +6,7 @@ import { defaultValueOptions } from '@/lib/value-helpers/predefined-values';
 
 export interface TableState extends Table {
   /* Currently active values. */
-  values: Values;
+  values: Omit<Values, 'id' | 'active'>;
   /* All possible value sets, including the active values. */
   valueSets: Values[];
 }
@@ -19,7 +19,17 @@ export async function getTableState(
   const { error, data } = await supabase
     .from('tables')
     .select(
-      `name, revealed, image_index, values!inner(id, values, active, description)`,
+      `
+      name,
+      revealed,
+      image_index,
+      values (
+        id,
+        values,
+        active,
+        description
+      )
+    `,
     )
     .eq('name', tableName)
     .limit(1)
@@ -31,6 +41,7 @@ export async function getTableState(
     );
     return null;
   }
+
   const { values, revealed, name, image_index } = data;
   return {
     revealed,
@@ -41,7 +52,7 @@ export async function getTableState(
       values.find(({ active }) => active) ??
       values.at(0) ??
       // NOTE: currently falling back to a default value when no entries are set without id/active
-      (defaultValueOptions[0] as Values),
+      defaultValueOptions[0],
     valueSets: values,
   };
 }

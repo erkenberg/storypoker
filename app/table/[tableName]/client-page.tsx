@@ -21,7 +21,12 @@ import { Settings } from './components/settings/settings';
 import { useIsModerator } from '@/lib/hooks/use-is-moderator';
 import { useIsObserver } from '@/lib/hooks/use-is-observer';
 import { Tables } from '@/database.types';
-import { Values } from '@/lib/supabase/types';
+import {
+  RealtimePostgresChangesPayload,
+  RealtimePostgresDeletePayload,
+} from '@supabase/realtime-js';
+import { RealtimePostgresUpdatePayload } from '@supabase/realtime-js/src/RealtimeChannel';
+import { defaultValueOptions } from '@/lib/value-helpers/predefined-values';
 
 interface ClientPageProps {
   tableName: string;
@@ -91,9 +96,9 @@ export default function ClientPage({
           table: 'tables',
           filter: `name=eq.${tableName}`,
         },
-        ({ new: table }: { new: Tables<'tables'> }) => {
+        ({ new: table }: RealtimePostgresUpdatePayload<Tables<'tables'>>) => {
           setTableState((old) => {
-            // NOTE: somehow tableState.revealed is always false in the subscription callback, therefore
+            // NOTE: somehow tableState.revealed is always false in the subscription callback, therefor
             // we check this in the setTableState callback where the oldValue is correct.
             if (old.revealed && !table.revealed) {
               resetPlayerStates();
@@ -110,12 +115,19 @@ export default function ClientPage({
       .on(
         'postgres_changes',
         {
-          event: 'UPDATE',
+          event: '*',
           schema: 'public',
           table: 'values',
           filter: `table_name=eq.${tableName}`,
         },
-        ({ new: values }: { new: Values }) => {
+        ({
+          new: values,
+          eventType,
+        }: RealtimePostgresChangesPayload<Tables<'values'>>) => {
+          // NOTE: DELETE apparently does NOT WORK with a filter: https://github.com/supabase/supabase/issues/30027#issuecomment-2438730888
+          // Thus we handle deletes in a separate listener without filter.
+          // we only handle INSERT and UPDATE here.
+          if (eventType === 'DELETE') return;
           setTableState((old) => {
             return {
               ...old,
@@ -125,6 +137,31 @@ export default function ClientPage({
                 values,
               ],
             } satisfies TableState;
+          });
+        },
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'values',
+        },
+        ({ old: { id } }: RealtimePostgresDeletePayload<Tables<'values'>>) => {
+          setTableState((old) => {
+            const valueSets = old.valueSets.filter(
+              (values) => values.id !== id,
+            );
+            return valueSets.length !== old.valueSets.length
+              ? ({
+                  ...old,
+                  values:
+                    valueSets.find((values) => values.active) ??
+                    valueSets.at(0) ??
+                    defaultValueOptions[0],
+                  valueSets,
+                } satisfies TableState)
+              : old;
           });
         },
       )

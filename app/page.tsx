@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import { createTable } from '@/lib/supabase/create-table';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { filter, uniq, includes } from 'lodash';
 import { defaultValueOptions } from '@/lib/value-helpers/predefined-values';
+import { parseAndValidateValueInput } from '@/lib/value-helpers/value-validation';
 
 const Page = (): JSX.Element => {
   const searchParams = useSearchParams();
@@ -29,7 +29,7 @@ const Page = (): JSX.Element => {
   const router = useRouter();
 
   const options = defaultValueOptions.map((values) => ({
-    label: `${values.description}: ${values.values.join(', ')}`,
+    label: `${values.description ? `${values.description}: ` : ''}${values.values.join(', ')}`,
     value: values,
   }));
 
@@ -40,26 +40,16 @@ const Page = (): JSX.Element => {
     setTableNameError(null);
     setValuesError(null);
 
-    let hasError = false;
+    let hasError = false; // Don't abort with first error, as we directly want to show all errors.
     if (!tableName || tableName.length < 2) {
       setTableNameError('Table name must have at least two characters!');
       hasError = true;
     }
     const valueArray = selectedOption.value.values.map((value) => value.trim());
+    const parsedResult = parseAndValidateValueInput(valueArray);
 
-    if (!valueArray || valueArray.length < 2) {
-      setValuesError("Please enter at least two ',' separated values!");
-      hasError = true;
-    }
-    const duplicates = uniq(
-      filter(valueArray, (value, index, array) =>
-        includes(array, value, index + 1),
-      ),
-    );
-    if (duplicates.length > 0) {
-      setValuesError(
-        `All values must be unique! Duplicates: ${duplicates.join(',')}`,
-      );
+    if (parsedResult.error) {
+      setValuesError(parsedResult.errorMessage);
       hasError = true;
     }
     if (hasError) return;

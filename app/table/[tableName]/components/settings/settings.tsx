@@ -13,6 +13,10 @@ import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
 import { styled } from '@mui/system';
 import { useIsModerator } from '@/lib/hooks/use-is-moderator';
 import { useIsObserver } from '@/lib/hooks/use-is-observer';
+import {
+  TableSettingsDialog,
+  TableSettingsDialogProps,
+} from './table-settings-dialog';
 
 const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -26,11 +30,12 @@ const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
 }));
 
-interface SettingsProps {
-  tableName: string;
-}
+type SettingsProps = TableSettingsDialogProps;
 
-export const Settings: FC<SettingsProps> = ({ tableName }): JSX.Element => {
+export const Settings: FC<SettingsProps> = ({
+  tableName,
+  valueSets,
+}): JSX.Element => {
   const { isModerator, setIsModerator } = useIsModerator(tableName);
   const { isObserver, setIsObserver } = useIsObserver(tableName);
   return (
@@ -39,7 +44,6 @@ export const Settings: FC<SettingsProps> = ({ tableName }): JSX.Element => {
       component={Card}
       variant="outlined"
       width={'100%'}
-      spacing={1}
       sx={{ padding: 1 }}
     >
       <Typography
@@ -52,7 +56,7 @@ export const Settings: FC<SettingsProps> = ({ tableName }): JSX.Element => {
       >
         Settings:
       </Typography>
-      <Grid>
+      <Grid container spacing={1}>
         <FormControlLabel
           control={
             <Switch
@@ -106,6 +110,7 @@ export const Settings: FC<SettingsProps> = ({ tableName }): JSX.Element => {
             </LightTooltip>
           }
         />
+        <TableSettingsDialog tableName={tableName} valueSets={valueSets} />
       </Grid>
     </Grid>
   );
