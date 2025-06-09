@@ -2,6 +2,7 @@ import React, { FC, JSX, useCallback, useEffect, useState } from 'react';
 import {
   DialogTitle,
   FormControl,
+  Grid,
   IconButton,
   InputLabel,
   MenuItem,
@@ -15,11 +16,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import SettingsIcon from '@mui/icons-material/Settings';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Values } from '@/lib/supabase/types';
 import TextField from '@mui/material/TextField';
 import { parseAndValidateValueInput } from '@/lib/value-helpers/value-validation';
 import { createValues } from '@/lib/supabase/create-values';
 import { updateActiveValues } from '@/lib/supabase/update-active-values';
+import { deleteValues } from '@/lib/supabase/delete-values';
 
 export type TableSettingsDialogProps = {
   tableName: string;
@@ -34,17 +37,23 @@ export const TableSettingsDialog: FC<TableSettingsDialogProps> = ({
 }): JSX.Element => {
   const [open, setOpen] = useState(false);
   const getCurrentlyActiveValues = useCallback(
-    (): string => `${valueSets.find(({ active }) => active)?.id ?? CREATE_NEW}`,
+    (): string =>
+      `${valueSets.find(({ active }) => active)?.id ?? valueSets.at(0)?.id ?? CREATE_NEW}`,
     [valueSets],
   );
-  const [selectedValues, setSelectedValues] = useState<string>(
-    getCurrentlyActiveValues(),
-  );
+
+  const [selectedValues, setSelectedValues] = useState<string>();
   const [valuesError, setValuesError] = useState<string | null>(null);
 
   useEffect(() => {
     setSelectedValues(getCurrentlyActiveValues());
   }, [getCurrentlyActiveValues]);
+
+  const handleOpen = (): void => {
+    setOpen(true);
+    setSelectedValues(getCurrentlyActiveValues());
+    setValuesError(null);
+  };
 
   const handleClose = (): void => {
     setOpen(false);
@@ -62,6 +71,8 @@ export const TableSettingsDialog: FC<TableSettingsDialogProps> = ({
       if (
         valueSets.some(({ active, id }) => active && `${id}` === selectedValues)
       ) {
+        // No change, do nothing
+        handleClose();
         return;
       }
       await updateActiveValues({ tableName, id: Number(selectedValues) });
@@ -87,11 +98,7 @@ export const TableSettingsDialog: FC<TableSettingsDialogProps> = ({
 
   return (
     <>
-      <IconButton
-        onClick={() => setOpen(true)}
-        color="primary"
-        sx={{ padding: 0 }}
-      >
+      <IconButton onClick={handleOpen} color="primary" sx={{ padding: 0 }}>
         <SettingsIcon fontSize="small" />
         <Typography component={'h2'} sx={{ marginLeft: 1 }}>
           Table Settings
@@ -106,32 +113,58 @@ export const TableSettingsDialog: FC<TableSettingsDialogProps> = ({
       >
         <DialogContent>
           <DialogTitle sx={{ paddingLeft: 0 }}>Table Settings</DialogTitle>
-          <FormControl fullWidth variant="standard">
-            <InputLabel id="active-value-select-label">
-              Active Table Values
-            </InputLabel>
-            <Select
-              labelId="active-value-select-label"
-              value={selectedValues}
-              onChange={(event: SelectChangeEvent) => {
-                setSelectedValues(event.target.value);
-              }}
-              fullWidth
-            >
-              <MenuItem
-                key={CREATE_NEW}
-                value={CREATE_NEW}
-                sx={{ color: 'primary.main' }}
-              >
-                Create new values
-              </MenuItem>
-              {valueSets.map(({ id, values, description }) => (
-                <MenuItem key={id} value={`${id}`}>
-                  {`${description ? description + ': ' : ''}${values.join(', ')}`}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Grid container alignItems="end">
+            <Grid size={selectedValues === CREATE_NEW ? 12 : 11}>
+              <FormControl fullWidth variant="standard">
+                <InputLabel id="active-value-select-label">
+                  Active Table Values
+                </InputLabel>
+                <Select
+                  labelId="active-value-select-label"
+                  value={selectedValues}
+                  onChange={(event: SelectChangeEvent) => {
+                    setSelectedValues(event.target.value);
+                  }}
+                  fullWidth
+                >
+                  <MenuItem
+                    key={CREATE_NEW}
+                    value={CREATE_NEW}
+                    sx={{ color: 'primary.main' }}
+                  >
+                    Add new values
+                  </MenuItem>
+                  {valueSets.map(({ id, values, description }) => (
+                    <MenuItem key={id} value={`${id}`}>
+                      {`${description ? description + ': ' : ''}${values.join(', ')}`}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid size={selectedValues === CREATE_NEW ? 0 : 1}>
+              {selectedValues !== CREATE_NEW && (
+                <IconButton
+                  onClick={async () => {
+                    if (
+                      window.confirm(
+                        'Are you sure you want to delete these values?',
+                      )
+                    ) {
+                      await deleteValues({
+                        id: Number(selectedValues),
+                        tableName,
+                      });
+                    }
+                  }}
+                  color="error"
+                  sx={{ padding: 0 }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              )}
+            </Grid>
+          </Grid>
           {selectedValues === CREATE_NEW && (
             <>
               <TextField

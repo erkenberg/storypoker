@@ -21,10 +21,7 @@ import { Settings } from './components/settings/settings';
 import { useIsModerator } from '@/lib/hooks/use-is-moderator';
 import { useIsObserver } from '@/lib/hooks/use-is-observer';
 import { Tables } from '@/database.types';
-import {
-  RealtimePostgresChangesPayload,
-  RealtimePostgresDeletePayload,
-} from '@supabase/realtime-js';
+import { RealtimePostgresChangesPayload } from '@supabase/realtime-js';
 import { RealtimePostgresUpdatePayload } from '@supabase/realtime-js/src/RealtimeChannel';
 import { getActiveValues } from '@/lib/value-helpers/get-active-values';
 
@@ -118,45 +115,42 @@ export default function ClientPage({
           event: '*',
           schema: 'public',
           table: 'values',
+          // NOTE: Delete only works with filters when `ALTER TABLE values REPLICA IDENTITY FULL;` was set
+          // See https://github.com/supabase/supabase/issues/30027#issuecomment-2676967926
           filter: `table_name=eq.${tableName}`,
         },
         ({
+          old: oldValues,
           new: values,
           eventType,
         }: RealtimePostgresChangesPayload<Tables<'values'>>) => {
-          // NOTE: DELETE apparently does NOT WORK with a filter: https://github.com/supabase/supabase/issues/30027#issuecomment-2438730888
-          // Thus we handle deletes in a separate listener without filter.
-          // we only handle INSERT and UPDATE here.
-          if (eventType === 'DELETE') return;
-          setTableState((old) => {
-            return {
-              ...old,
-              values: values.active ? values : old.values,
-              valueSets: [
-                ...old.valueSets.filter(({ id }) => id !== values.id),
-                values,
-              ],
-            } satisfies TableState;
-          });
-        },
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'values',
-        },
-        ({ old: { id } }: RealtimePostgresDeletePayload<Tables<'values'>>) => {
-          const valueSets = tableState.valueSets.filter(
-            (values) => values.id !== id,
-          );
-          if (valueSets.length !== tableState.valueSets.length) {
+          if (eventType === 'DELETE') {
+            setTableState((old) => {
+              const newValueSets = old.valueSets.filter(
+                (values) => values.id !== oldValues.id,
+              );
+              // Note: The new active valueSet is actually set via an UPDATE message
+              return {
+                ...old,
+                // Note: The new active valueSet is actually set via an UPDATE message
+                // Only if we delete the last value we should update the values,
+                // as in that case no update for the new active value is triggered
+                values: newValueSets.length
+                  ? old.values
+                  : getActiveValues(newValueSets),
+                valueSets: newValueSets,
+              } satisfies TableState;
+            });
+          } else {
             setTableState((old) => {
               return {
                 ...old,
-                values: getActiveValues(valueSets),
-                valueSets,
+                values: values.active ? values : old.values,
+                valueSets: [
+                  // This handles both updates and inserts
+                  ...old.valueSets.filter(({ id }) => id !== values.id),
+                  values,
+                ],
               } satisfies TableState;
             });
           }
