@@ -1,3 +1,5 @@
+'use client';
+
 import React, { FC, JSX, useCallback, useEffect, useState } from 'react';
 import {
   DialogTitle,
@@ -23,6 +25,7 @@ import { parseAndValidateValueInput } from '@/lib/value-helpers/value-validation
 import { createValues } from '@/lib/supabase/create-values';
 import { updateActiveValues } from '@/lib/supabase/update-active-values';
 import { deleteValues } from '@/lib/supabase/delete-values';
+import { useIsModerator } from '@/lib/hooks/use-is-moderator';
 
 export type TableSettingsDialogProps = {
   tableName: string;
@@ -41,6 +44,7 @@ export const TableSettingsDialog: FC<TableSettingsDialogProps> = ({
       `${valueSets.find(({ active }) => active)?.id ?? valueSets.at(0)?.id ?? CREATE_NEW}`,
     [valueSets],
   );
+  const { isModerator } = useIsModerator(tableName);
 
   const [selectedValues, setSelectedValues] = useState<string>();
   const [valuesError, setValuesError] = useState<string | null>(null);
@@ -95,6 +99,10 @@ export const TableSettingsDialog: FC<TableSettingsDialogProps> = ({
 
     handleClose();
   };
+
+  if (!isModerator) {
+    return <></>;
+  }
 
   return (
     <>
