@@ -47,6 +47,7 @@ export const UsernameDialog: FC = (): JSX.Element => {
       >
         <DialogContent>
           <TextField
+            autoComplete="off"
             sx={{ marginTop: 0 }}
             autoFocus
             required

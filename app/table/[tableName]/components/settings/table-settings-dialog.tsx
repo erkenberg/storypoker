@@ -176,6 +176,7 @@ export const TableSettingsDialog: FC<TableSettingsDialogProps> = ({
           {selectedValues === CREATE_NEW && (
             <>
               <TextField
+                autoComplete="off"
                 sx={{ marginTop: 1 }}
                 name="description"
                 label="Description"
@@ -183,6 +184,7 @@ export const TableSettingsDialog: FC<TableSettingsDialogProps> = ({
                 variant="standard"
               />
               <TextField
+                autoComplete="off"
                 sx={{ marginTop: 1 }}
                 required
                 name="values"
