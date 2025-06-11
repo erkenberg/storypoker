@@ -2,6 +2,7 @@
 
 import { createServerClient } from '@/lib/supabase/create-server-client';
 import { Values } from '@/lib/supabase/types';
+import { updateActiveValues } from '@/lib/supabase/update-active-values';
 
 interface CreateValueArgs {
   tableName: string;
@@ -33,9 +34,6 @@ export async function createValues({
 
   const newId = valueInsertResult.data?.at(0)?.id;
   if (newId) {
-    await supabase
-      .from('values')
-      .update({ table_name: tableName, active: false })
-      .neq('id', newId);
+    await updateActiveValues({ tableName, id: newId });
   }
 }
