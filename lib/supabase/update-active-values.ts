@@ -13,12 +13,10 @@ export async function updateActiveValues({
 }: UpdateValueArgs): Promise<void> {
   const supabase = await createServerClient();
 
+  await supabase.from('values').update({ active: true }).eq('id', id);
   await supabase
     .from('values')
-    .update({ table_name: tableName, active: true })
-    .eq('id', id);
-  await supabase
-    .from('values')
-    .update({ table_name: tableName, active: false })
-    .neq('id', id);
+    .update({ active: false })
+    .neq('id', id)
+    .eq('table_name', tableName);
 }
