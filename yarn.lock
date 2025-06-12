@@ -5552,7 +5552,7 @@ __metadata:
     react-chartjs-2: "npm:^5.3.0"
     react-dom: "npm:19.1.0"
     sharp: "npm:^0.34.2"
-    supabase: "npm:^2.23.4"
+    supabase: "npm:^2.26.7"
     tss-react: "npm:^4.9.18"
     typescript: "npm:5.8.3"
     usehooks-ts: "npm:^3.1.1"
@@ -5764,9 +5764,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supabase@npm:^2.23.4":
-  version: 2.24.3
-  resolution: "supabase@npm:2.24.3"
+"supabase@npm:^2.26.7":
+  version: 2.26.7
+  resolution: "supabase@npm:2.26.7"
   dependencies:
     bin-links: "npm:^5.0.0"
     https-proxy-agent: "npm:^7.0.2"
@@ -5774,7 +5774,7 @@ __metadata:
     tar: "npm:7.4.3"
   bin:
     supabase: bin/supabase
-  checksum: 10c0/0a367df76163a0d02757f4ddec55b1a6f1d85071faadd4a466b7df3702201215dc6539d360c22ea5cf7d23f69c261f272001894d55ea73da770e5b337c805b6a
+  checksum: 10c0/f6f57941a434c195bf1174fdf570dbd02deacdc0cc7fde9bfef7df35bd0cf679a65daef8907b43b21cc7143878e3f9cd0df571b1229bc1ecd2f54460f046e9b4
   languageName: node
   linkType: hard
 
