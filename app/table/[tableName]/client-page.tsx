@@ -179,12 +179,7 @@ export default function ClientPage({
     return (): void => {
       cleanupRealtimeChannel();
     };
-  }, [
-    realtimeChannel,
-    cleanupRealtimeChannel,
-    ownState.clientId,
-    resetPlayerStates,
-  ]);
+  }, [realtimeChannel, cleanupRealtimeChannel, ownState.clientId]);
 
   useEffect(() => {
     if (ownState.username.length > 0) {
