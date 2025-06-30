@@ -195,10 +195,10 @@ export default function ClientPage({
   }
 
   const canReveal =
-    mergedPlayerStates.some(({ selectedValue }) => selectedValue != null) &&
+    isModerator &&
     !tableState.revealed &&
-    (selectedValue !== null || isObserver) &&
-    isModerator;
+    mergedPlayerStates.some(({ selectedValue }) => selectedValue != null) &&
+    (selectedValue !== null || isObserver);
 
   return (
     <Grid container spacing={1.5}>
