@@ -189,10 +189,13 @@ export default function ClientPage({
     }
   }, [realtimeChannel, ownState]);
 
-  // Small validation attempt, resetting the selected value when tampering with it in the local storage
-  if (selectedValue && !tableState.values.values.includes(selectedValue)) {
-    setSelectedValue(null);
-  }
+  useEffect(() => {
+    // Reset the selected value when it doesn't exist due to either
+    // manual editing localStorage or changing the active values
+    if (selectedValue && !tableState.values.values.includes(selectedValue)) {
+      setSelectedValue(null);
+    }
+  }, [selectedValue, tableState.values.values, setSelectedValue]);
 
   const canReveal =
     isModerator &&
