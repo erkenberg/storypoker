@@ -6,3 +6,10 @@ export type Values = Pick<
 >;
 
 export type Table = Pick<Tables<'tables'>, 'name' | 'revealed' | 'image_index'>;
+
+export interface TableState extends Table {
+  /* Currently active values. */
+  values: Omit<Values, 'id' | 'active'>;
+  /* All possible value sets, including the active values. */
+  valueSets: Values[];
+}

@@ -17,7 +17,7 @@ const Page = async ({ params }: PageProps): Promise<JSX.Element> => {
   const tableState = await getTableState(tableName);
   if (!tableState) {
     console.log('Table ' + tableName + " doesn't exist, redirecting");
-    redirect('/?tableName=' + tableName);
+    redirect('/?tableName=' + encodeURIComponent(tableName));
   }
 
   return <ClientPage tableName={tableName} initialTableState={tableState} />;

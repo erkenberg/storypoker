@@ -12,9 +12,16 @@ export async function deleteValues({
   id,
   tableName,
 }: DeleteValueArgs): Promise<void> {
+  if (typeof tableName !== 'string' || !Number.isInteger(id)) return;
+
   const supabase = await createServerClient();
 
-  const valueDeleteResult = await supabase.from('values').delete().eq('id', id);
+  // Restrict to the current table, so that value sets of other tables can't be deleted.
+  const valueDeleteResult = await supabase
+    .from('values')
+    .delete()
+    .eq('id', id)
+    .eq('table_name', tableName);
 
   if (valueDeleteResult.error) {
     console.error(

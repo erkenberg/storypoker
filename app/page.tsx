@@ -15,6 +15,7 @@ import { createTable } from '@/lib/supabase/create-table';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { defaultValueOptions } from '@/lib/value-helpers/predefined-values';
 import { parseAndValidateValueInput } from '@/lib/value-helpers/value-validation';
+import { validateTableName } from '@/lib/table-helpers/table-name-validation';
 
 const Page = (): JSX.Element => {
   const searchParams = useSearchParams();
@@ -41,8 +42,9 @@ const Page = (): JSX.Element => {
     setValuesError(null);
 
     let hasError = false; // Don't abort with first error, as we directly want to show all errors.
-    if (!tableName || tableName.length < 2) {
-      setTableNameError('Table name must have at least two characters!');
+    const tableNameValidationError = validateTableName(tableName);
+    if (tableNameValidationError) {
+      setTableNameError(tableNameValidationError);
       hasError = true;
     }
     const valueArray = selectedOption.value.values.map((value) => value.trim());
