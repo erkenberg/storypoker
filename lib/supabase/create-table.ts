@@ -3,6 +3,11 @@
 // used as server action by the creation form
 import { createServerClient } from '@/lib/supabase/create-server-client';
 import { Values } from '@/lib/supabase/types';
+import { validateTableName } from '@/lib/table-helpers/table-name-validation';
+import {
+  parseAndValidateValueInput,
+  validateValueDescription,
+} from '@/lib/value-helpers/value-validation';
 
 interface CreateTableResult {
   ok: boolean;
@@ -19,6 +24,20 @@ export async function createTable({
   tableName,
   values,
 }: CreateTableArgs): Promise<CreateTableResult> {
+  // Server actions can be called with arbitrary input, so validate again on the server.
+  const tableNameError = validateTableName(tableName);
+  if (tableNameError) {
+    return { ok: false, tableName, error: tableNameError };
+  }
+  const parsedValues = parseAndValidateValueInput(values?.values);
+  if (parsedValues.error) {
+    return { ok: false, tableName, error: parsedValues.errorMessage };
+  }
+  const descriptionError = validateValueDescription(values.description);
+  if (descriptionError) {
+    return { ok: false, tableName, error: descriptionError };
+  }
+
   const supabase = await createServerClient();
 
   const { count, error: countError } = await supabase
@@ -61,7 +80,7 @@ export async function createTable({
 
   const { error: valueInsertError } = await supabase.from('values').insert({
     table_name: tableName,
-    values: values.values,
+    values: parsedValues.values,
     description: values.description,
     active: true,
   });

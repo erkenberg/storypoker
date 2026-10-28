@@ -1,15 +1,8 @@
-'use server';
+import 'server-only';
 
 import { createServerClient } from '@/lib/supabase/create-server-client';
-import { Table, Values } from '@/lib/supabase/types';
+import { TableState } from '@/lib/supabase/types';
 import { getActiveValues } from '@/lib/value-helpers/get-active-values';
-
-export interface TableState extends Table {
-  /* Currently active values. */
-  values: Omit<Values, 'id' | 'active'>;
-  /* All possible value sets, including the active values. */
-  valueSets: Values[];
-}
 
 export async function getTableState(
   tableName: string,

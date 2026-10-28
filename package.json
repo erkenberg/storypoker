@@ -6,8 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "format": "next lint && prettier --write app"
+    "lint": "eslint .",
+    "format": "eslint . && prettier --write app lib"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -24,6 +24,7 @@
     "react": "^19.2.3",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "19.2.3",
+    "server-only": "^0.0.1",
     "sharp": "^0.34.5",
     "tss-react": "^4.9.20",
     "usehooks-ts": "^3.1.1",
@@ -35,8 +36,6 @@
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@types/uuid": "^11.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.49.0",
-    "@typescript-eslint/parser": "^8.49.0",
     "eslint": "9.39.1",
     "eslint-config-next": "16.0.10",
     "eslint-config-prettier": "^10.1.8",

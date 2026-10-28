@@ -9,6 +9,15 @@ export async function setTableRevealed({
   image_index,
 }: Pick<Tables<'tables'>, 'name' | 'revealed'> &
   Partial<Pick<Tables<'tables'>, 'image_index'>>): Promise<void> {
+  if (
+    typeof name !== 'string' ||
+    typeof revealed !== 'boolean' ||
+    (image_index !== undefined &&
+      (!Number.isInteger(image_index) || image_index < 0))
+  ) {
+    return;
+  }
+
   const supabase = await createServerClient();
 
   await supabase

@@ -182,6 +182,7 @@ export const TableSettingsDialog: FC<TableSettingsDialogProps> = ({
                 label="Description"
                 fullWidth
                 variant="standard"
+                slotProps={{ htmlInput: { maxLength: 100 } }}
               />
               <TextField
                 autoComplete="off"
